@@ -1,0 +1,72 @@
+@import 'tailwindcss';
+@import 'tw-animate-css';
+
+@custom-variant dark (&:is(.dark *));
+
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700&display=swap');
+
+:root {
+  --background: 0 0% 98%;
+  --foreground: 20 14% 8%;
+  --card: 0 0% 100%;
+  --card-foreground: 20 14% 8%;
+  --popover: 0 0% 100%;
+  --popover-foreground: 20 14% 8%;
+  --primary: 30 45% 35%;
+  --primary-foreground: 0 0% 98%;
+  --secondary: 20 10% 20%;
+  --secondary-foreground: 0 0% 98%;
+  --muted: 20 5% 85%;
+  --muted-foreground: 20 5% 45%;
+  --accent: 40 60% 55%;
+  --accent-foreground: 0 0% 8%;
+  --destructive: 0 84.2% 60.2%;
+  --destructive-foreground: 0 0% 98%;
+  --border: 20 5% 90%;
+  --input: 0 0% 96%;
+  --ring: 30 45% 35%;
+  --radius: 0.5rem;
+}
+
+.dark {
+  --background: 20 14% 8%;
+  --foreground: 0 0% 98%;
+  --card: 20 10% 15%;
+  --card-foreground: 0 0% 98%;
+  --popover: 20 10% 15%;
+  --popover-foreground: 0 0% 98%;
+  --primary: 40 60% 55%;
+  --primary-foreground: 20 14% 8%;
+  --secondary: 20 5% 35%;
+  --secondary-foreground: 0 0% 98%;
+  --muted: 20 5% 30%;
+  --muted-foreground: 20 5% 60%;
+  --accent: 30 45% 50%;
+  --accent-foreground: 0 0% 98%;
+  --destructive: 0 84.2% 60.2%;
+  --destructive-foreground: 20 14% 8%;
+  --border: 20 10% 20%;
+  --input: 20 10% 18%;
+  --ring: 40 60% 55%;
+}
+
+:root {
+  --font-geist-sans: 'Geist', 'Geist Fallback';
+  --font-geist-mono: 'Geist Mono', 'Geist Mono Fallback';
+  --font-playfair: 'Playfair Display', serif;
+}
+
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+  }
+  html {
+    scroll-behavior: smooth;
+  }
+  body {
+    @apply bg-background text-foreground antialiased;
+  }
+  h1, h2, h3, h4, h5, h6 {
+    @apply font-serif font-bold;
+  }
+}
