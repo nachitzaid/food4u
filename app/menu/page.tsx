@@ -5,6 +5,7 @@ import { useState, useMemo } from 'react'
 import { CartProvider } from '@/context/cart-context'
 import { CartSidebar } from '@/components/menu/cart-sidebar'
 import { MenuItemCard } from '@/components/menu/menu-item-card'
+import { Header } from '@/components/header'
 import { ChefHat, Search, Clock } from 'lucide-react'
 import Link from 'next/link'
 
@@ -111,23 +112,7 @@ function MenuContent() {
 
   return (
     <div className="min-h-screen bg-background">
-      {/* Navigation */}
-      <nav className="sticky top-0 z-40 bg-background/80 backdrop-blur-md border-b border-border">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
-          <Link href="/" className="flex items-center gap-2 hover:opacity-80 transition">
-            <ChefHat className="w-8 h-8 text-primary" />
-            <span className="font-serif text-2xl font-bold text-foreground">Food4U</span>
-          </Link>
-          <div className="flex items-center gap-4">
-            <button className="px-4 py-2 text-sm text-foreground hover:bg-muted rounded-lg transition">
-              My Orders
-            </button>
-            <button className="px-4 py-2 text-sm font-medium text-primary-foreground bg-primary hover:bg-primary/90 rounded-lg transition">
-              Sign Out
-            </button>
-          </div>
-        </div>
-      </nav>
+      <Header />
 
       {/* Header */}
       <section className="py-12 px-4 sm:px-6 lg:px-8 border-b border-border">

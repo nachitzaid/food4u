@@ -2,10 +2,10 @@
 
 import { motion } from 'framer-motion'
 import { useState } from 'react'
-import { ChefHat, MapPin, Phone, Mail, ChevronRight, Truck, DollarSign, Clock } from 'lucide-react'
+import { Header } from '@/components/header'
+import { ChevronRight, Truck, Clock } from 'lucide-react'
 import { CartProvider, useCart } from '@/context/cart-context'
 import Link from 'next/link'
-import Image from 'next/image'
 
 // Restaurant location (mock)
 const RESTAURANT_LOCATION = {
@@ -99,15 +99,7 @@ function CheckoutContent() {
 
   return (
     <div className="min-h-screen bg-background">
-      {/* Navigation */}
-      <nav className="sticky top-0 z-40 bg-background/80 backdrop-blur-md border-b border-border">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
-          <Link href="/" className="flex items-center gap-2 hover:opacity-80 transition">
-            <ChefHat className="w-8 h-8 text-primary" />
-            <span className="font-serif text-2xl font-bold text-foreground">Food4U</span>
-          </Link>
-        </div>
-      </nav>
+      <Header />
 
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
         <motion.div

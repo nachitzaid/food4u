@@ -1,7 +1,8 @@
 'use client'
 
 import { motion, AnimatePresence } from 'framer-motion'
-import { ChefHat, Plus, Edit2, Trash2, X, Check } from 'lucide-react'
+import { Header } from '@/components/header'
+import { Plus, Edit2, Trash2, X, Check } from 'lucide-react'
 import { useState } from 'react'
 import Link from 'next/link'
 import Image from 'next/image'
@@ -131,18 +132,7 @@ export default function AdminMenuPage() {
 
   return (
     <div className="min-h-screen bg-background">
-      {/* Navigation */}
-      <nav className="sticky top-0 z-40 bg-background/80 backdrop-blur-md border-b border-border">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
-          <Link href="/admin" className="flex items-center gap-2 hover:opacity-80 transition">
-            <ChefHat className="w-8 h-8 text-primary" />
-            <span className="font-serif text-2xl font-bold text-foreground">Food4U Admin</span>
-          </Link>
-          <button className="px-4 py-2 text-sm font-medium text-primary-foreground bg-primary hover:bg-primary/90 rounded-lg transition">
-            Sign Out
-          </button>
-        </div>
-      </nav>
+      <Header />
 
       {/* Header */}
       <section className="py-12 px-4 sm:px-6 lg:px-8 border-b border-border">

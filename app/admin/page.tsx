@@ -1,7 +1,8 @@
 'use client'
 
 import { motion } from 'framer-motion'
-import { ChefHat, BarChart3, ShoppingCart, Users, TrendingUp, Clock, CheckCircle2, AlertCircle } from 'lucide-react'
+import { Header } from '@/components/header'
+import { BarChart3, ShoppingCart, TrendingUp, Clock, CheckCircle2, AlertCircle } from 'lucide-react'
 import { useState } from 'react'
 import Link from 'next/link'
 
@@ -100,36 +101,7 @@ export default function AdminDashboard() {
 
   return (
     <div className="min-h-screen bg-background">
-      {/* Navigation */}
-      <nav className="sticky top-0 z-40 bg-background/80 backdrop-blur-md border-b border-border">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
-          <div className="flex items-center gap-2">
-            <ChefHat className="w-8 h-8 text-primary" />
-            <span className="font-serif text-2xl font-bold text-foreground">Food4U Admin</span>
-          </div>
-          <div className="flex items-center gap-4">
-            <button
-              onClick={() => setSoundEnabled(!soundEnabled)}
-              className={`px-4 py-2 text-sm font-medium rounded-lg transition ${
-                soundEnabled
-                  ? 'bg-primary text-primary-foreground'
-                  : 'bg-muted text-foreground'
-              }`}
-            >
-              🔔 {soundEnabled ? 'On' : 'Off'}
-            </button>
-            <button
-              onClick={() => setIsOpen(!isOpen)}
-              className="px-4 py-2 text-sm font-medium text-foreground hover:bg-muted rounded-lg transition"
-            >
-              {isOpen ? 'Close' : 'Open'} Restaurant
-            </button>
-            <button className="px-4 py-2 text-sm font-medium text-primary-foreground bg-primary hover:bg-primary/90 rounded-lg transition">
-              Sign Out
-            </button>
-          </div>
-        </div>
-      </nav>
+      <Header />
 
       {/* Status Banner */}
       <motion.div
