@@ -9,6 +9,7 @@ import { MenuItemModal } from '@/components/menu/menu-item-modal'
 import { Header } from '@/components/header'
 import { Search, Clock } from 'lucide-react'
 import Link from 'next/link'
+import Image from 'next/image'
 
 // Mock menu data with detailed information
 const MENU_ITEMS = [

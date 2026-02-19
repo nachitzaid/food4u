@@ -53,7 +53,7 @@ const STATUS_CONFIG = {
   },
   preparing: {
     label: 'Preparing',
-    icon: ChefHat,
+    icon: Clock,
     color: 'text-purple-500',
     bgColor: 'bg-purple-500/10',
   },
