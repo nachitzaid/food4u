@@ -7,7 +7,7 @@ import { CartSidebar } from '@/components/menu/cart-sidebar'
 import { MenuItemCard } from '@/components/menu/menu-item-card'
 import { MenuItemModal } from '@/components/menu/menu-item-modal'
 import { Header } from '@/components/header'
-import { Search } from 'lucide-react'
+import { Search, Clock } from 'lucide-react'
 import Link from 'next/link'
 
 // Mock menu data with detailed information
