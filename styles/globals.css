@@ -2,48 +2,48 @@
 @import 'tailwindcss';
 
 :root {
-  --background: hsl(0 0% 98%);
-  --foreground: hsl(20 14% 8%);
+  --background: hsl(0 0% 100%);
+  --foreground: hsl(0 0% 20%);
   --card: hsl(0 0% 100%);
-  --card-foreground: hsl(20 14% 8%);
+  --card-foreground: hsl(0 0% 20%);
   --popover: hsl(0 0% 100%);
-  --popover-foreground: hsl(20 14% 8%);
-  --primary: hsl(30 45% 35%);
-  --primary-foreground: hsl(0 0% 98%);
-  --secondary: hsl(20 10% 20%);
-  --secondary-foreground: hsl(0 0% 98%);
-  --muted: hsl(20 5% 85%);
-  --muted-foreground: hsl(20 5% 45%);
-  --accent: hsl(40 60% 55%);
-  --accent-foreground: hsl(0 0% 8%);
+  --popover-foreground: hsl(0 0% 20%);
+  --primary: hsl(95 100% 52%);
+  --primary-foreground: hsl(0 0% 20%);
+  --secondary: hsl(0 0% 20%);
+  --secondary-foreground: hsl(95 100% 52%);
+  --muted: hsl(0 0% 95%);
+  --muted-foreground: hsl(0 0% 50%);
+  --accent: hsl(95 100% 52%);
+  --accent-foreground: hsl(0 0% 20%);
   --destructive: hsl(0 84.2% 60.2%);
-  --destructive-foreground: hsl(0 0% 98%);
-  --border: hsl(20 5% 90%);
-  --input: hsl(0 0% 96%);
-  --ring: hsl(30 45% 35%);
-  --radius: 0.5rem;
+  --destructive-foreground: hsl(0 0% 100%);
+  --border: hsl(0 0% 90%);
+  --input: hsl(0 0% 95%);
+  --ring: hsl(95 100% 52%);
+  --radius: 0.75rem;
 }
 
 .dark {
-  --background: hsl(20 14% 8%);
-  --foreground: hsl(0 0% 98%);
-  --card: hsl(20 10% 15%);
-  --card-foreground: hsl(0 0% 98%);
-  --popover: hsl(20 10% 15%);
-  --popover-foreground: hsl(0 0% 98%);
-  --primary: hsl(40 60% 55%);
-  --primary-foreground: hsl(20 14% 8%);
-  --secondary: hsl(20 5% 35%);
-  --secondary-foreground: hsl(0 0% 98%);
-  --muted: hsl(20 5% 30%);
-  --muted-foreground: hsl(20 5% 60%);
-  --accent: hsl(30 45% 50%);
-  --accent-foreground: hsl(0 0% 98%);
+  --background: hsl(0 0% 15%);
+  --foreground: hsl(0 0% 95%);
+  --card: hsl(0 0% 20%);
+  --card-foreground: hsl(0 0% 95%);
+  --popover: hsl(0 0% 20%);
+  --popover-foreground: hsl(0 0% 95%);
+  --primary: hsl(95 100% 52%);
+  --primary-foreground: hsl(0 0% 15%);
+  --secondary: hsl(0 0% 30%);
+  --secondary-foreground: hsl(0 0% 95%);
+  --muted: hsl(0 0% 25%);
+  --muted-foreground: hsl(0 0% 60%);
+  --accent: hsl(95 100% 52%);
+  --accent-foreground: hsl(0 0% 15%);
   --destructive: hsl(0 84.2% 60.2%);
-  --destructive-foreground: hsl(20 14% 8%);
-  --border: hsl(20 10% 20%);
-  --input: hsl(20 10% 18%);
-  --ring: hsl(40 60% 55%);
+  --destructive-foreground: hsl(0 0% 15%);
+  --border: hsl(0 0% 25%);
+  --input: hsl(0 0% 22%);
+  --ring: hsl(95 100% 52%);
 }
 
 @theme inline {
@@ -86,6 +86,6 @@
     @apply bg-background text-foreground antialiased;
   }
   h1, h2, h3, h4, h5, h6 {
-    @apply font-serif font-bold;
+    @apply font-sans font-bold;
   }
 }

@@ -52,68 +52,68 @@ export function MenuItemCard({
       whileInView={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.4 }}
       viewport={{ once: true }}
-      whileHover={{ translateY: -4 }}
-      className={`bg-card border border-border rounded-2xl overflow-hidden transition ${
+      whileHover={{ y: -8 }}
+      className={`bg-white border-2 border-border rounded-3xl overflow-hidden transition shadow-md hover:shadow-lg ${
         !isAvailable ? 'opacity-50 pointer-events-none' : ''
       }`}
     >
-      <div className="relative w-full h-40 overflow-hidden bg-muted">
+      <div className="relative w-full h-48 overflow-hidden bg-muted">
         <Image
           src={image}
           alt={name}
           fill
-          className="object-cover hover:scale-110 transition duration-300"
+          className="object-cover hover:scale-105 transition duration-300"
         />
         {!isAvailable && (
           <div className="absolute inset-0 bg-black/40 flex items-center justify-center">
-            <span className="text-white font-semibold">Sold Out</span>
+            <span className="text-white font-bold text-lg">Sold Out</span>
           </div>
         )}
       </div>
 
-      <div className="p-4">
-        <h3 className="font-serif font-semibold text-foreground mb-1 line-clamp-1">
+      <div className="p-5">
+        <h3 className="font-bold text-lg text-foreground mb-2 line-clamp-1">
           {name}
         </h3>
-        <p className="text-sm text-muted-foreground line-clamp-2 mb-3">
+        <p className="text-sm text-muted-foreground line-clamp-2 mb-4">
           {description}
         </p>
 
         <div className="flex items-center justify-between">
-          <span className="font-serif text-lg font-bold text-primary">
+          <span className="text-2xl font-bold text-primary">
             ${price.toFixed(2)}
           </span>
 
           {quantity === 0 ? (
             <motion.button
-              whileHover={{ scale: 1.05 }}
+              whileHover={{ scale: 1.08 }}
               whileTap={{ scale: 0.95 }}
               onClick={handleAdd}
               disabled={!isAvailable}
-              className="w-10 h-10 bg-primary text-primary-foreground rounded-lg flex items-center justify-center hover:bg-primary/90 transition disabled:opacity-50"
+              className="w-12 h-12 bg-primary text-white rounded-full flex items-center justify-center hover:opacity-90 transition disabled:opacity-50 font-bold shadow-lg"
             >
-              <Plus className="w-5 h-5" />
+              <Plus className="w-6 h-6" />
             </motion.button>
           ) : (
-            <div className="flex items-center gap-2 bg-primary/10 rounded-lg p-1">
+            <div className="flex items-center gap-2 bg-primary text-white rounded-full px-2 py-2 shadow-lg">
               <motion.button
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
+                whileHover={{ scale: 1.1 }}
+                whileTap={{ scale: 0.9 }}
                 onClick={handleRemove}
-                className="w-8 h-8 flex items-center justify-center hover:bg-primary/20 rounded transition"
+                className="w-8 h-8 flex items-center justify-center hover:bg-primary/80 rounded-full transition font-bold"
               >
-                <Minus className="w-4 h-4 text-primary" />
+                <Minus className="w-5 h-5" />
               </motion.button>
-              <span className="w-6 text-center font-semibold text-sm text-primary">
+              <span className="w-8 text-center font-bold text-base">
                 {quantity}
               </span>
               <motion.button
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
+                whileHover={{ scale: 1.1 }}
+                whileTap={{ scale: 0.9 }}
                 onClick={handleAdd}
-                className="w-8 h-8 flex items-center justify-center hover:bg-primary/20 rounded transition"
+                className="w-8 h-8 flex items-center justify-center hover:bg-primary/80 rounded-full transition font-bold"
               >
-                <Plus className="w-4 h-4 text-primary" />
+                <Plus className="w-5 h-5" />
               </motion.button>
             </div>
           )}
