@@ -1,302 +1,316 @@
-"use client";
+'use client'
 
-import { motion, useScroll, useTransform, useMotionValue, useSpring } from "framer-motion";
-import { loginWithGoogle } from "@/services/auth";
-import { useAuth } from "@/hooks/useAuth";
-import { useRouter } from "next/navigation";
-import { useEffect, useRef } from "react";
-import { ChevronRight, Star, Clock, ShieldCheck, Play, ArrowRight, Utensils, MapPin, Heart } from "lucide-react";
-import Link from "next/link";
+import { motion } from 'framer-motion'
+import { ChefHat, Clock, MapPin, TrendingUp, Zap, Shield, Lock, ArrowRight, ChevronRight } from 'lucide-react'
+import Link from 'next/link'
 
-export default function LandingPage() {
-  const { user, userData, loading } = useAuth();
-  const router = useRouter();
-  const containerRef = useRef<HTMLDivElement>(null);
-
-  // Scroll animations
-  const { scrollYProgress } = useScroll({
-    target: containerRef,
-    offset: ["start start", "end end"]
-  });
-
-  const heroY = useTransform(scrollYProgress, [0, 0.2], [0, -50]);
-  const heroOpacity = useTransform(scrollYProgress, [0, 0.15], [1, 0]);
-
-  // Parallax for features
-  const featureY1 = useTransform(scrollYProgress, [0.7, 0.9], [50, 0]);
-  const featureY2 = useTransform(scrollYProgress, [0.7, 0.9], [100, 0]);
-  const featureY3 = useTransform(scrollYProgress, [0.7, 0.9], [150, 0]);
-
-  // 3D Tilt Effect
-  const x = useMotionValue(0);
-  const y = useMotionValue(0);
-  const mouseX = useSpring(x, { stiffness: 500, damping: 50 });
-  const mouseY = useSpring(y, { stiffness: 500, damping: 50 });
-  const rotateX = useTransform(mouseY, [-0.5, 0.5], ["7deg", "-7deg"]);
-  const rotateY = useTransform(mouseX, [-0.5, 0.5], ["-7deg", "7deg"]);
-
-  function handleMouseMove(event: React.MouseEvent<HTMLDivElement>) {
-    const rect = event.currentTarget.getBoundingClientRect();
-    const width = rect.width;
-    const height = rect.height;
-    const mouseXPos = event.clientX - rect.left;
-    const mouseYPos = event.clientY - rect.top;
-    const xPct = mouseXPos / width - 0.5;
-    const yPct = mouseYPos / height - 0.5;
-    x.set(xPct);
-    y.set(yPct);
-  }
-
-  function handleMouseLeave() {
-    x.set(0);
-    y.set(0);
-  }
-
-  useEffect(() => {
-    if (user && !loading) {
-      if (userData?.role === "admin") {
-        router.push("/admin/dashboard");
-      } else {
-        router.push("/menu");
-      }
-    }
-  }, [user, userData, loading, router]);
-
-  const handleLogin = async () => {
-    try {
-      await loginWithGoogle();
-    } catch (error) {
-      console.error("Login failed:", error);
-    }
-  };
-
-  const categories = [
-    { name: "Pizza", emoji: "🍕", color: "bg-red-50", text: "text-red-600" },
-    { name: "Burgers", emoji: "🍔", color: "bg-orange-50", text: "text-orange-600" },
-    { name: "Salads", emoji: "🥗", color: "bg-green-50", text: "text-green-600" },
-    { name: "Sides", emoji: "🍟", color: "bg-yellow-50", text: "text-yellow-600" },
-    { name: "Desserts", emoji: "🍰", color: "bg-purple-50", text: "text-purple-600" },
-  ];
-
+export default function Home() {
   return (
-    <div ref={containerRef} className="relative min-h-screen bg-white">
-      {/* Noise Texture */}
-      <div className="noise-bg" />
-
-      {/* Dynamic Background Elements */}
-      <div className="absolute top-0 right-0 -z-10 w-[800px] h-[800px] bg-red-100/20 blur-[120px] rounded-full -mr-40 -mt-20 overflow-hidden" />
-      <div className="absolute top-[20%] left-0 -z-10 w-[400px] h-[400px] bg-orange-50/40 blur-[100px] rounded-full -ml-20 overflow-hidden" />
-
-      {/* Hero Section */}
-      <section className="relative pt-10 pb-20 md:pt-20 md:pb-32 overflow-hidden">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col md:flex-row items-center gap-16">
+    <div className="min-h-screen bg-background text-foreground selection:bg-primary selection:text-white">
+      {/* Premium Navbar */}
+      <nav className="fixed top-0 w-full z-50 transition-all duration-500 bg-background/20 backdrop-blur-xl border-b border-white/10 hover:bg-background/80">
+        <div className="max-w-7xl mx-auto px-6 h-20 flex items-center justify-between">
           <motion.div
-            style={{ y: heroY, opacity: heroOpacity }}
-            className="flex-1 text-center md:text-left z-10"
+            initial={{ opacity: 0, x: -20 }}
+            animate={{ opacity: 1, x: 0 }}
+            className="flex items-center gap-3 group px-4 py-2 rounded-2xl bg-white/5 border border-white/10"
           >
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              className="inline-flex items-center gap-2 px-6 py-2.5 mb-8 bg-red-50 border border-red-100 rounded-full text-red-600 font-black text-[10px] uppercase tracking-[0.3em] shadow-sm"
-            >
-              <span className="flex h-2 w-2 rounded-full bg-red-600 animate-ping" /> The Artisanal Era
-            </motion.div>
-
-            <motion.h1
-              initial={{ opacity: 0, y: 30 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.2 }}
-              className="text-6xl md:text-8xl font-black text-gray-900 leading-[1.05] tracking-tight mb-8"
-            >
-              Crave the <br /> Manifesto of <br />
-              <span className="text-red-600">Pure Taste.</span>
-            </motion.h1>
-
-            <motion.p
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.3 }}
-              className="text-xl text-gray-500 mb-10 max-w-lg mx-auto md:mx-0 leading-relaxed font-medium"
-            >
-              Bridging the gap between fine dining and fast delivery. Experience meticulous craftsmanship in every bite.
-            </motion.p>
-
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.4 }}
-              className="flex flex-col sm:flex-row items-center justify-center md:justify-start gap-5"
-            >
-              <button
-                onClick={handleLogin}
-                className="w-full sm:w-auto px-10 py-5 bg-red-600 text-white rounded-3xl font-black text-xl hover:bg-gray-900 transition-all shadow-2xl shadow-red-200 flex items-center justify-center gap-3 group active:scale-95 premium-glow"
-              >
-                Start Journey <ArrowRight className="group-hover:translate-x-2 transition-transform" />
-              </button>
-              <button
-                onClick={() => router.push("/menu")}
-                className="w-full sm:w-auto px-10 py-5 bg-white text-gray-900 border-2 border-gray-100 rounded-3xl font-black text-xl hover:border-red-600 transition-all flex items-center justify-center gap-3 active:scale-95 shadow-sm"
-              >
-                <Utensils size={24} className="text-red-600" /> Manifest
-              </button>
-            </motion.div>
-          </motion.div>
-
-          <motion.div
-            initial={{ opacity: 0, scale: 0.9, rotate: 10 }}
-            animate={{ opacity: 1, scale: 1, rotate: 0 }}
-            transition={{ duration: 1, ease: "easeOut" }}
-            className="flex-1 relative perspective-1000"
-            onMouseMove={handleMouseMove}
-            onMouseLeave={handleMouseLeave}
-            style={{
-              perspective: 1000
-            }}
-          >
-            {/* Main Hero Image */}
-            <motion.div
-              style={{ rotateX, rotateY, transformStyle: "preserve-3d" }}
-              className="relative group transition-transform duration-100 ease-out"
-            >
-              <div className="absolute inset-0 bg-red-600/10 blur-[100px] rounded-full group-hover:bg-red-600/20 transition-all duration-700" />
-              <div
-                className="relative w-full aspect-[4/5] md:aspect-square bg-white rounded-[60px] md:rounded-[100px] shadow-[0_50px_100px_-20px_rgba(0,0,0,0.15)] overflow-hidden border-[16px] border-white ring-1 ring-gray-100"
-                style={{ transform: "translateZ(20px)" }}
-              >
-                <img
-                  src="https://images.unsplash.com/photo-1504674900247-0877df9cc836?auto=format&fit=crop&q=80&w=1000"
-                  alt="Delicious premium food"
-                  className="w-full h-full object-cover transition-transform duration-1000 group-hover:scale-110"
-                />
-              </div>
-
-              {/* Floating UI Elements */}
-              <motion.div
-                animate={{ y: [0, -20, 0] }}
-                transition={{ repeat: Infinity, duration: 4, ease: "easeInOut" }}
-                style={{ transform: "translateZ(60px)" }}
-                className="absolute -top-10 -right-10 bg-white p-6 rounded-[32px] shadow-2xl border border-gray-50 flex items-center gap-4 z-20 backdrop-blur-md bg-white/90"
-              >
-                <div className="w-12 h-12 bg-red-600 rounded-2xl flex items-center justify-center text-white">
-                  <Clock size={24} />
-                </div>
-                <div>
-                  <p className="text-xs text-gray-400 font-bold uppercase tracking-widest">Efficiency</p>
-                  <p className="font-black text-gray-900">12 MIN AVG</p>
-                </div>
-              </motion.div>
-
-              <motion.div
-                animate={{ y: [0, 20, 0] }}
-                transition={{ repeat: Infinity, duration: 5, ease: "easeInOut", delay: 1 }}
-                style={{ transform: "translateZ(50px)" }}
-                className="absolute bottom-20 -left-12 bg-white p-6 rounded-[32px] shadow-2xl border border-gray-50 flex items-center gap-4 z-20 backdrop-blur-md bg-white/90"
-              >
-                <div className="w-12 h-12 bg-gold-400 rounded-2xl flex items-center justify-center text-white">
-                  <Star size={24} fill="white" />
-                </div>
-                <div>
-                  <p className="text-xs text-gray-400 font-bold uppercase tracking-widest">Accolades</p>
-                  <p className="font-black text-gray-900">Michelin Prep</p>
-                </div>
-              </motion.div>
-
-              {/* Notification Card */}
-              <motion.div
-                initial={{ x: 100, opacity: 0 }}
-                animate={{ x: 0, opacity: 1 }}
-                transition={{ delay: 1, duration: 0.5 }}
-                style={{ transform: "translateZ(80px)" }}
-                className="absolute top-[20%] -right-16 bg-black/80 text-white p-4 rounded-2xl shadow-2xl z-20 backdrop-blur-xl border border-white/10 flex items-center gap-3"
-              >
-                <div className="w-8 h-8 rounded-full bg-red-600 flex items-center justify-center text-xs">
-                  <Heart size={14} fill="white" />
-                </div>
-                <span className="text-sm font-bold">New order from Sarah!</span>
-              </motion.div>
-            </motion.div>
-          </motion.div>
-        </div>
-      </section>
-
-      {/* Category Quick Links */}
-      <section className="py-20 bg-gray-50/50">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex flex-col md:flex-row justify-between items-end mb-12 gap-4">
-            <div>
-              <h2 className="text-4xl font-black text-gray-900 mb-4 tracking-tight">Cuisines for every <span className="text-red-600 italic">Mood</span></h2>
-              <p className="text-gray-500 font-medium">Explore our diverse menu and find your next favorite dish.</p>
+            <div className="w-10 h-10 rounded-full bg-primary flex items-center justify-center text-white shadow-lg shadow-primary/40 group-hover:scale-110 transition duration-300">
+              <ChefHat className="w-6 h-6" />
             </div>
-            <Link href="/menu" className="flex items-center gap-2 text-red-600 font-black hover:gap-4 transition-all uppercase text-xs tracking-widest">
-              View All <ChevronRight size={20} />
-            </Link>
-          </div>
+            <span className="font-serif text-2xl font-bold tracking-tight text-white">Food4U</span>
+          </motion.div>
 
-          <div className="grid grid-cols-2 md:grid-cols-5 gap-6">
-            {categories.map((cat, i) => (
-              <motion.div
-                key={cat.name}
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                transition={{ delay: i * 0.1 }}
-                whileHover={{ y: -10 }}
-                className={`${cat.color} p-10 rounded-[48px] flex flex-col items-center justify-center gap-4 cursor-pointer transition-all border border-transparent hover:border-white hover:shadow-2xl shadow-gray-200/50`}
+          <div className="hidden lg:flex items-center gap-10">
+            {['The Menu', 'Our Story', 'Culinary Team', 'Location'].map((item) => (
+              <Link
+                key={item}
+                href={item === 'The Menu' ? '/menu' : '#'}
+                className="text-sm font-bold uppercase tracking-[0.2em] text-white/70 hover:text-primary transition"
               >
-                <span className="text-6xl mb-2">{cat.emoji}</span>
-                <span className={`text-[10px] font-black uppercase tracking-[0.2em] ${cat.text}`}>{cat.name}</span>
-              </motion.div>
+                {item}
+              </Link>
             ))}
           </div>
+
+          <motion.div
+            initial={{ opacity: 0, x: 20 }}
+            animate={{ opacity: 1, x: 0 }}
+            className="flex items-center gap-4"
+          >
+            <Link href="/auth/login" className="px-6 py-2.5 text-sm font-bold uppercase tracking-widest text-white hover:text-primary transition">
+              Login
+            </Link>
+            <Link href="/menu" className="px-8 py-3 bg-primary text-white text-sm font-bold uppercase tracking-widest rounded-xl hover:bg-primary/90 transition shadow-xl shadow-primary/20 hover:scale-105 active:scale-95">
+              Experience Menu
+            </Link>
+          </motion.div>
+        </div>
+      </nav>
+
+      {/* Hero Section - The Grand Entrance */}
+      <section className="relative h-screen flex items-center justify-center overflow-hidden">
+        <div className="absolute inset-0 z-0">
+          <div className="absolute inset-0 bg-black/60 z-10" />
+          <img
+            src="https://images.unsplash.com/photo-1514362545857-3bc16c4c7d1b?q=80&w=2000"
+            className="w-full h-full object-cover scale-105 animate-slow-zoom"
+            alt="Hero background"
+          />
+        </div>
+
+        <motion.div
+          initial={{ opacity: 0, y: 40 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 1, ease: "easeOut" }}
+          className="relative z-20 text-center max-w-4xl px-6"
+        >
+          <motion.div
+            initial={{ opacity: 0, scale: 0.9 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ delay: 0.5 }}
+            className="inline-block px-4 py-2 border border-primary/40 bg-primary/10 backdrop-blur-md rounded-full text-primary text-xs font-bold uppercase tracking-[0.3em] mb-8"
+          >
+            Since 1994 • Culinary Excellence
+          </motion.div>
+          <h1 className="font-serif text-6xl md:text-9xl font-bold text-white mb-8 leading-[0.9]">
+            Taste the <br />
+            <span className="italic text-primary">Masterpiece</span>
+          </h1>
+          <p className="text-xl md:text-2xl text-white/70 font-light max-w-2xl mx-auto leading-relaxed mb-12">
+            A symphony of flavors, where every dish tells a story of heritage and innovation. Welcome to the pinnacle of dining.
+          </p>
+          <div className="flex flex-col sm:flex-row gap-6 justify-center">
+            <Link href="/menu" className="px-12 py-5 bg-primary text-white font-bold uppercase tracking-widest rounded-2xl hover:bg-primary/90 transition-all shadow-2xl shadow-primary/40 text-lg group">
+              View Our Menu <ArrowRight className="inline-block ml-2 w-5 h-5 group-hover:translate-x-2 transition" />
+            </Link>
+            <button className="px-12 py-5 bg-white/5 backdrop-blur-md border border-white/20 text-white font-bold uppercase tracking-widest rounded-2xl hover:bg-white/10 transition text-lg">
+              Our Story
+            </button>
+          </div>
+        </motion.div>
+
+        {/* Scroll Indicator */}
+        <motion.div
+          animate={{ y: [0, 10, 0] }}
+          transition={{ duration: 2, repeat: Infinity }}
+          className="absolute bottom-10 left-1/2 -translate-x-1/2 text-white/40 flex flex-col items-center gap-2"
+        >
+          <span className="text-[10px] uppercase tracking-[0.4em]">Discover</span>
+          <div className="w-[1px] h-12 bg-gradient-to-b from-white/40 to-transparent" />
+        </motion.div>
+      </section>
+
+      {/* About Section - The Story */}
+      <section className="py-32 px-6 bg-background relative overflow-hidden">
+        <div className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-2 gap-24 items-center">
+          <motion.div
+            whileInView={{ opacity: 1, x: 0 }}
+            initial={{ opacity: 0, x: -40 }}
+            viewport={{ once: true }}
+            className="space-y-8"
+          >
+            <div className="text-primary font-bold uppercase tracking-[0.4em] text-sm">Our Heritage</div>
+            <h2 className="font-serif text-5xl md:text-7xl font-bold leading-tight">
+              Crafted with <br /> Passion, Served <br /> with <span className="italic">Soul</span>.
+            </h2>
+            <p className="text-lg text-muted-foreground leading-relaxed max-w-lg">
+              Our journey started with a single goal: to redefine what a meal can be. Every ingredient is sourced from artisanal farms, and every recipe is a result of years of culinary exploration.
+            </p>
+            <div className="grid grid-cols-2 gap-8 pt-6">
+              <div>
+                <div className="text-4xl font-serif font-bold mb-2">29+</div>
+                <div className="text-xs font-bold uppercase tracking-widest text-muted-foreground">Years of Experience</div>
+              </div>
+              <div>
+                <div className="text-4xl font-serif font-bold mb-2">12k+</div>
+                <div className="text-xs font-bold uppercase tracking-widest text-muted-foreground">Five Star Reviews</div>
+              </div>
+            </div>
+            <button className="text-primary font-bold uppercase tracking-widest flex items-center gap-2 pt-4 hover:gap-4 transition-all">
+              Learn More About Us <ChevronRight className="w-5 h-5" />
+            </button>
+          </motion.div>
+
+          <motion.div
+            whileInView={{ opacity: 1, scale: 1 }}
+            initial={{ opacity: 0, scale: 0.9 }}
+            viewport={{ once: true }}
+            className="relative"
+          >
+            <div className="aspect-[4/5] rounded-[3rem] overflow-hidden rotate-2 hover:rotate-0 transition duration-700 shadow-2xl shadow-primary/10">
+              <img
+                src="https://images.unsplash.com/photo-1550966842-285dc8032742?q=80&w=1200"
+                className="w-full h-full object-cover"
+                alt="Chef at work"
+              />
+            </div>
+            <div className="absolute -bottom-10 -left-10 w-48 h-48 bg-primary rounded-[2rem] p-8 text-white hidden md:flex flex-col justify-center -rotate-6">
+              <ChefHat className="w-10 h-10 mb-4" />
+              <div className="font-serif text-xl font-bold leading-tight">Elite Culinary Excellence</div>
+            </div>
+          </motion.div>
         </div>
       </section>
 
-      {/* Features Grid */}
-      <section className="py-32">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center max-w-2xl mx-auto mb-20">
-            <h2 className="text-5xl font-black text-gray-900 mb-6 tracking-tight">Why <span className="text-red-600">Food4U</span>?</h2>
-            <p className="text-xl text-gray-500 font-medium">We're not just a delivery service, we're a premium culinary manifesto.</p>
+      {/* Feature Section - The Experience */}
+      <section className="py-32 px-6 bg-card relative">
+        <div className="max-w-7xl mx-auto">
+          <div className="text-center mb-24">
+            <h2 className="font-serif text-5xl md:text-7xl font-bold mb-4">Why Dine with Us?</h2>
+            <p className="text-muted-foreground max-w-xl mx-auto">Experience the intersection of luxury and comfort.</p>
           </div>
 
-          <div className="grid md:grid-cols-3 gap-12 text-center md:text-left">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
             {[
               {
-                icon: <MapPin className="text-red-600" size={32} />,
-                title: "Live Manifest Sync",
-                desc: "Follow your meal from the kitchen to your doorstep with GPS precision.",
-                y: featureY1
+                icon: <Zap className="w-8 h-8" />,
+                title: "Live Preparation",
+                desc: "Watch our master chefs craft your dish in our signature open kitchen.",
+                num: "01"
               },
               {
-                icon: <ShieldCheck className="text-red-600" size={32} />,
-                title: "Encrypted Trust",
-                desc: "Your payments and data are protected by top-tier encryption technology.",
-                y: featureY2
+                icon: <TrendingUp className="w-8 h-8" />,
+                title: "Seasonal Menu",
+                desc: "Our menu evolves with the seasons to ensure the freshest flavors imaginable.",
+                num: "02"
               },
               {
-                icon: <Utensils className="text-red-600" size={32} />,
-                title: "Artisanal Integrity",
-                desc: "Supporting local master chefs by providing a professional, fair framework.",
-                y: featureY3
+                icon: <Shield className="w-8 h-8" />,
+                title: "Artisanal Sourcing",
+                desc: "We partner exclusively with local farms committed to ethical and organic practices.",
+                num: "03"
               }
-            ].map((feature, i) => (
+            ].map((f, i) => (
               <motion.div
                 key={i}
-                initial={{ opacity: 0, scale: 0.9 }}
-                whileInView={{ opacity: 1, scale: 1 }}
-                transition={{ delay: i * 0.2 }}
-                style={{ y: feature.y }}
-                className="group"
+                whileHover={{ translateY: -12 }}
+                className="p-10 bg-background border border-border rounded-[2.5rem] relative group overflow-hidden"
               >
-                <div className="w-20 h-20 bg-red-50 rounded-[32px] flex items-center justify-center mb-8 mx-auto md:mx-0 group-hover:scale-110 transition-transform">
-                  {feature.icon}
+                <div className="absolute top-0 right-0 p-8 font-serif text-4xl text-primary/10 group-hover:text-primary/20 transition">{f.num}</div>
+                <div className="w-16 h-16 rounded-2xl bg-primary/10 text-primary flex items-center justify-center mb-8 group-hover:bg-primary group-hover:text-white transition duration-500">
+                  {f.icon}
                 </div>
-                <h3 className="text-2xl font-black text-gray-900 mb-4">{feature.title}</h3>
-                <p className="text-gray-500 leading-relaxed font-medium">{feature.desc}</p>
+                <h3 className="font-serif text-2xl font-bold mb-4">{f.title}</h3>
+                <p className="text-muted-foreground leading-relaxed italic">{f.desc}</p>
               </motion.div>
             ))}
           </div>
         </div>
       </section>
+
+      {/* Map & Location Section */}
+      <section className="py-32 px-6 bg-background">
+        <div className="max-w-7xl mx-auto flex flex-col items-center">
+          <div className="text-center mb-16">
+            <div className="text-primary font-bold uppercase tracking-[0.4em] text-sm mb-4">Visit Us</div>
+            <h2 className="font-serif text-5xl md:text-7xl font-bold mb-6">Our Location</h2>
+            <p className="text-muted-foreground max-w-md mx-auto flex items-center justify-center gap-2">
+              <MapPin className="w-5 h-5 text-primary" /> 123 Gastronomy Avenue, Culinary District, NY
+            </p>
+          </div>
+
+          <motion.div
+            whileInView={{ opacity: 1, y: 0 }}
+            initial={{ opacity: 0, y: 40 }}
+            viewport={{ once: true }}
+            className="w-full h-[500px] rounded-[3rem] overflow-hidden border border-border shadow-2xl relative bg-muted/20"
+          >
+            {/* Real Map Placeholder - Using Iframe for reliability as requested */}
+            <iframe
+              src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d193595.2528082187!2d-74.1197637392!3d40.69766374874431!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x89c24fa5d33f083b%3A0xc80b8f06e177fe62!2sNew%20York%2C%20NY%2C%20USA!5e0!3m2!1sen!2s!4v1700000000000!5m2!1sen!2s"
+              className="w-full h-full border-none grayscale hover:grayscale-0 transition-all duration-1000"
+              allowFullScreen={true}
+              loading="lazy"
+              referrerPolicy="no-referrer-when-downgrade"
+            ></iframe>
+
+            {/* Custom Overlay */}
+            <div className="absolute top-10 right-10 bg-white/90 backdrop-blur-md p-8 rounded-3xl shadow-2xl max-w-sm hidden lg:block">
+              <h4 className="font-serif text-2xl font-bold mb-2 text-foreground">Opening Hours</h4>
+              <div className="space-y-4 text-sm mt-4">
+                <div className="flex justify-between border-b pb-2">
+                  <span className="text-muted-foreground">Mon - Fri</span>
+                  <span className="font-bold text-foreground">11:00 AM - 11:00 PM</span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="text-muted-foreground">Sat - Sun</span>
+                  <span className="font-bold text-primary">10:00 AM - 12:00 PM</span>
+                </div>
+              </div>
+              <button className="w-full mt-6 py-3 bg-primary text-white font-bold rounded-xl shadow-lg shadow-primary/20">
+                Get Directions
+              </button>
+            </div>
+          </motion.div>
+        </div>
+      </section>
+
+      {/* Final CTA */}
+      <section className="py-40 px-6 bg-primary overflow-hidden relative">
+        <div className="absolute top-0 left-0 w-full h-full opacity-10">
+          <div className="absolute -top-20 -left-20 w-96 h-96 bg-white rounded-full blur-[100px]" />
+          <div className="absolute -bottom-20 -right-20 w-96 h-96 bg-accent rounded-full blur-[100px]" />
+        </div>
+        <div className="max-w-4xl mx-auto text-center relative z-10">
+          <motion.h2
+            whileInView={{ scale: [0.9, 1] }}
+            viewport={{ once: true }}
+            className="font-serif text-6xl md:text-8xl font-bold text-white mb-8"
+          >
+            Ready for an <br /> <span className="italic opacity-80">Unforgettable</span> <br /> Experience?
+          </motion.h2>
+          <p className="text-white/80 text-xl mb-12 max-w-2xl mx-auto leading-relaxed">
+            Reserve your table or order online for the finest culinary experience of your life. Our doors are open.
+          </p>
+          <div className="flex flex-col sm:flex-row gap-6 justify-center">
+            <Link href="/menu" className="px-12 py-5 bg-white text-primary font-bold uppercase tracking-widest rounded-2xl hover:scale-105 transition shadow-2xl shadow-primary/20">
+              Start Your Order
+            </Link>
+          </div>
+        </div>
+      </section>
+
+      {/* Footer */}
+      <footer className="bg-background border-t border-border py-20 px-6">
+        <div className="max-w-7xl mx-auto grid grid-cols-1 md:col-span-1 lg:grid-cols-4 gap-16">
+          <div className="col-span-1 md:col-span-2 space-y-8">
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 rounded-full bg-primary flex items-center justify-center text-white">
+                <ChefHat className="w-6 h-6" />
+              </div>
+              <span className="font-serif text-3xl font-bold tracking-tight">Food4U</span>
+            </div>
+            <p className="text-muted-foreground text-lg leading-relaxed max-w-sm italic">
+              "Cooking is not just about making food, it's about making memories."
+            </p>
+          </div>
+          <div>
+            <h4 className="font-serif text-xl font-bold mb-6">Explore</h4>
+            <ul className="space-y-4 text-muted-foreground font-medium">
+              <li><Link href="/menu" className="hover:text-primary transition">The Menu</Link></li>
+              <li><Link href="#" className="hover:text-primary transition">Our Specialities</Link></li>
+              <li><Link href="#" className="hover:text-primary transition">The Kitchen</Link></li>
+              <li><Link href="#" className="hover:text-primary transition">Reservations</Link></li>
+            </ul>
+          </div>
+          <div>
+            <h4 className="font-serif text-xl font-bold mb-6">Contact</h4>
+            <ul className="space-y-4 text-muted-foreground font-medium">
+              <li>info@food4u.com</li>
+              <li>+1 (234) 567-890</li>
+              <li>123 Gastronomy Ave, NY</li>
+            </ul>
+          </div>
+        </div>
+        <div className="max-w-7xl mx-auto pt-20 mt-20 border-t border-border flex flex-col md:flex-row justify-between items-center gap-6 text-sm font-bold uppercase tracking-widest text-muted-foreground/60">
+          <p>© 2024 Food4U • Crafted for Excellence</p>
+          <div className="flex gap-8">
+            <a href="#" className="hover:text-primary transition">Privacy</a>
+            <a href="#" className="hover:text-primary transition">Terms</a>
+          </div>
+        </div>
+      </footer>
     </div>
-  );
+  )
 }

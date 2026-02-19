@@ -1,0 +1,91 @@
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700&display=swap');
+@import 'tailwindcss';
+
+:root {
+  --background: hsl(0 0% 98%);
+  --foreground: hsl(20 14% 8%);
+  --card: hsl(0 0% 100%);
+  --card-foreground: hsl(20 14% 8%);
+  --popover: hsl(0 0% 100%);
+  --popover-foreground: hsl(20 14% 8%);
+  --primary: hsl(30 45% 35%);
+  --primary-foreground: hsl(0 0% 98%);
+  --secondary: hsl(20 10% 20%);
+  --secondary-foreground: hsl(0 0% 98%);
+  --muted: hsl(20 5% 85%);
+  --muted-foreground: hsl(20 5% 45%);
+  --accent: hsl(40 60% 55%);
+  --accent-foreground: hsl(0 0% 8%);
+  --destructive: hsl(0 84.2% 60.2%);
+  --destructive-foreground: hsl(0 0% 98%);
+  --border: hsl(20 5% 90%);
+  --input: hsl(0 0% 96%);
+  --ring: hsl(30 45% 35%);
+  --radius: 0.5rem;
+}
+
+.dark {
+  --background: hsl(20 14% 8%);
+  --foreground: hsl(0 0% 98%);
+  --card: hsl(20 10% 15%);
+  --card-foreground: hsl(0 0% 98%);
+  --popover: hsl(20 10% 15%);
+  --popover-foreground: hsl(0 0% 98%);
+  --primary: hsl(40 60% 55%);
+  --primary-foreground: hsl(20 14% 8%);
+  --secondary: hsl(20 5% 35%);
+  --secondary-foreground: hsl(0 0% 98%);
+  --muted: hsl(20 5% 30%);
+  --muted-foreground: hsl(20 5% 60%);
+  --accent: hsl(30 45% 50%);
+  --accent-foreground: hsl(0 0% 98%);
+  --destructive: hsl(0 84.2% 60.2%);
+  --destructive-foreground: hsl(20 14% 8%);
+  --border: hsl(20 10% 20%);
+  --input: hsl(20 10% 18%);
+  --ring: hsl(40 60% 55%);
+}
+
+@theme inline {
+  --font-sans: 'Geist', 'Geist Fallback';
+  --font-serif: 'Playfair Display', serif;
+  --font-mono: 'Geist Mono', 'Geist Mono Fallback';
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-destructive-foreground: var(--destructive-foreground);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+  --radius-sm: calc(var(--radius) - 4px);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) + 4px);
+}
+
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+  }
+  html {
+    scroll-behavior: smooth;
+  }
+  body {
+    @apply bg-background text-foreground antialiased;
+  }
+  h1, h2, h3, h4, h5, h6 {
+    @apply font-serif font-bold;
+  }
+}

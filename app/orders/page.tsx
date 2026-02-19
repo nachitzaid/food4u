@@ -1,153 +1,310 @@
-"use client";
+'use client'
 
-import { useState, useEffect } from "react";
-import { useAuth } from "@/hooks/useAuth";
-import { db } from "@/services/firebase";
-import { collection, query, where, orderBy, onSnapshot } from "firebase/firestore";
-import { motion, AnimatePresence } from "framer-motion";
-import {
-    Clock, CheckCircle2, Package, Truck, Utensils, AlertCircle, MapPin, ChevronRight, ShoppingBag
-} from "lucide-react";
-import Link from "next/link";
+import { motion } from 'framer-motion'
+import { Header } from '@/components/header'
+import { Truck, Clock, MapPin, CheckCircle2, Phone, MessageSquare, ChefHat, Loader2 } from 'lucide-react'
+import { useState, useEffect } from 'react'
+import Link from 'next/link'
+import { subscribeToUserOrders } from '@/services/firestore'
+import { auth } from '@/services/firebase'
+import { onAuthStateChanged } from 'firebase/auth'
+
+interface OrderItem {
+  name: string
+  quantity: number
+  price?: number
+}
+
+interface Order {
+  id: string
+  status: 'pending' | 'accepted' | 'preparing' | 'out-for-delivery' | 'delivered'
+  items: OrderItem[]
+  total: number
+  subtotal?: number
+  deliveryFee?: number
+  tax?: number
+  deliveryAddress?: {
+    street: string
+    city: string
+    zipCode: string
+    phone: string
+  }
+  createdAt: Date
+}
 
 const STATUS_CONFIG = {
-    pending: { icon: Clock, color: "text-blue-500", bg: "bg-blue-50", label: "Order Received", step: 1, desc: "We've received your order." },
-    accepted: { icon: CheckCircle2, color: "text-indigo-500", bg: "bg-indigo-50", label: "Accepted", step: 2, desc: "Restaurant accepted your order." },
-    preparing: { icon: Utensils, color: "text-orange-500", bg: "bg-orange-50", label: "Cooking", step: 3, desc: "Chefs are working their magic." },
-    out_for_delivery: { icon: Truck, color: "text-purple-500", bg: "bg-purple-50", label: "On the way", step: 4, desc: "Your food is traveling to you." },
-    delivered: { icon: CheckCircle2, color: "text-green-500", bg: "bg-green-50", label: "Delivered", step: 5, desc: "Enjoy your meal!" },
-    rejected: { icon: AlertCircle, color: "text-red-500", bg: "bg-red-50", label: "Cancelled", step: 0, desc: "Order could not be fulfilled." },
-};
+  pending: {
+    label: 'Order Confirmed',
+    icon: Clock,
+    color: 'text-yellow-500',
+    bgColor: 'bg-yellow-500/10',
+  },
+  accepted: {
+    label: 'Accepted',
+    icon: CheckCircle2,
+    color: 'text-blue-500',
+    bgColor: 'bg-blue-500/10',
+  },
+  preparing: {
+    label: 'Preparing',
+    icon: ChefHat,
+    color: 'text-purple-500',
+    bgColor: 'bg-purple-500/10',
+  },
+  'out-for-delivery': {
+    label: 'Out for Delivery',
+    icon: Truck,
+    color: 'text-green-500',
+    bgColor: 'bg-green-500/10',
+  },
+  delivered: {
+    label: 'Delivered',
+    icon: CheckCircle2,
+    color: 'text-emerald-500',
+    bgColor: 'bg-emerald-500/10',
+  },
+}
+
+const STATUSES = ['pending', 'accepted', 'preparing', 'out-for-delivery', 'delivered'] as const
+
+function OrderCard({ order }: { order: Order }) {
+  const currentStatusIndex = STATUSES.indexOf(order.status)
+  const statusConfig = STATUS_CONFIG[order.status] ?? STATUS_CONFIG.pending
+  const StatusIcon = statusConfig.icon
+
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      whileHover={{ translateY: -4 }}
+      className="bg-card border border-border rounded-2xl p-6 hover:border-primary/50 transition"
+    >
+      <div className="flex items-start justify-between mb-4">
+        <div>
+          <h3 className="font-serif text-xl font-bold text-foreground">
+            #{order.id.slice(0, 8).toUpperCase()}
+          </h3>
+          <p className="text-sm text-muted-foreground">
+            {order.createdAt instanceof Date
+              ? order.createdAt.toLocaleDateString()
+              : new Date(order.createdAt).toLocaleDateString()}
+          </p>
+        </div>
+        <div className={`p-3 rounded-lg ${statusConfig.bgColor}`}>
+          <StatusIcon className={`w-6 h-6 ${statusConfig.color}`} />
+        </div>
+      </div>
+
+      {/* Status Progress */}
+      <div className="mb-6">
+        <div className="flex justify-between mb-2">
+          {STATUSES.map((status, i) => {
+            const isActive = i <= currentStatusIndex
+            return (
+              <motion.div
+                key={status}
+                initial={{ scale: 0 }}
+                animate={{ scale: 1 }}
+                transition={{ delay: i * 0.1 }}
+                className={`w-2 h-2 rounded-full ${isActive ? 'bg-primary' : 'bg-border'}`}
+              />
+            )
+          })}
+        </div>
+        <p className="text-sm font-medium text-foreground">{statusConfig.label}</p>
+      </div>
+
+      {/* Order Items */}
+      <div className="space-y-2 mb-4 p-3 bg-muted/30 rounded-lg">
+        {Array.isArray(order.items) && order.items.map((item, i) => (
+          <div key={i} className="flex justify-between text-sm">
+            <span className="text-foreground">{item.name}</span>
+            <span className="text-muted-foreground">x{item.quantity}</span>
+          </div>
+        ))}
+      </div>
+
+      {/* Delivery Address */}
+      {order.deliveryAddress && (
+        <div className="flex items-start gap-2 text-sm text-muted-foreground mb-4">
+          <MapPin className="w-4 h-4 mt-0.5 flex-shrink-0" />
+          <span>
+            {order.deliveryAddress.street}, {order.deliveryAddress.city} {order.deliveryAddress.zipCode}
+          </span>
+        </div>
+      )}
+
+      <div className="border-t border-border pt-4 mb-4">
+        <div className="flex justify-between items-center">
+          <span className="text-muted-foreground">Total</span>
+          <span className="font-serif text-xl font-bold text-primary">
+            ${Number(order.total).toFixed(2)}
+          </span>
+        </div>
+      </div>
+
+      <div className="flex gap-2">
+        <button className="flex-1 py-2 text-sm font-medium text-foreground bg-muted hover:bg-muted/80 rounded-lg transition flex items-center justify-center gap-2">
+          <MessageSquare className="w-4 h-4" />
+          Message
+        </button>
+        <button className="flex-1 py-2 text-sm font-medium text-foreground bg-muted hover:bg-muted/80 rounded-lg transition flex items-center justify-center gap-2">
+          <Phone className="w-4 h-4" />
+          Call
+        </button>
+      </div>
+    </motion.div>
+  )
+}
 
 export default function OrdersPage() {
-    const { user } = useAuth();
-    const [orders, setOrders] = useState<any[]>([]);
-    const [loading, setLoading] = useState(true);
+  const [orders, setOrders] = useState<Order[]>([])
+  const [loading, setLoading] = useState(true)
+  const [userId, setUserId] = useState<string | null>(null)
+  const [selectedTab, setSelectedTab] = useState<'active' | 'past'>('active')
 
-    useEffect(() => {
-        if (!user) return;
-        const q = query(
-            collection(db, "orders"),
-            where("userId", "==", user.uid),
-            orderBy("createdAt", "desc")
-        );
-        const unsubscribe = onSnapshot(q, (snapshot) => {
-            const ordersData = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-            setOrders(ordersData);
-            setLoading(false);
-        });
-        return () => unsubscribe();
-    }, [user]);
+  // Listen for auth state
+  useEffect(() => {
+    const unsubAuth = onAuthStateChanged(auth, user => {
+      setUserId(user?.uid ?? null)
+      if (!user) setLoading(false)
+    })
+    return () => unsubAuth()
+  }, [])
 
-    if (loading) return (
-        <div className="flex flex-col items-center justify-center min-h-[70vh]">
-            <div className="w-12 h-12 border-4 border-gray-100 border-t-red-600 rounded-full animate-spin mb-4" />
-            <p className="text-gray-400 font-black text-[10px] uppercase tracking-[0.3em] animate-pulse">Syncing</p>
+  // Subscribe to real-time orders when user is known
+  useEffect(() => {
+    if (!userId) return
+
+    setLoading(true)
+    const unsubOrders = subscribeToUserOrders(userId, (rawOrders) => {
+      setOrders(rawOrders as unknown as Order[])
+      setLoading(false)
+    })
+
+    return () => unsubOrders()
+  }, [userId])
+
+  const activeOrders = orders.filter(o => o.status !== 'delivered')
+  const pastOrders = orders.filter(o => o.status === 'delivered')
+
+  return (
+    <div className="min-h-screen bg-background">
+      <Header />
+
+      {/* Header */}
+      <section className="py-12 px-4 sm:px-6 lg:px-8 border-b border-border">
+        <div className="max-w-7xl mx-auto">
+          <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}>
+            <h1 className="font-serif text-4xl md:text-5xl font-bold text-foreground mb-2">
+              Your Orders
+            </h1>
+            <p className="text-muted-foreground">Track your current and past orders</p>
+          </motion.div>
         </div>
-    );
+      </section>
 
-    return (
-        <div className="min-h-screen bg-gray-50/50 pb-32">
-            <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-20">
-                <div className="mb-16">
-                    <h1 className="text-5xl font-black text-gray-900 tracking-tighter mb-2">Order <span className="text-red-600">History</span></h1>
-                    <p className="text-gray-400 font-bold">Track your culinary journeys.</p>
-                </div>
+      {/* Tabs */}
+      <section className="sticky top-16 z-30 bg-background border-b border-border">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="flex gap-8">
+            <motion.button
+              whileHover={{ color: '#D97706' }}
+              onClick={() => setSelectedTab('active')}
+              className={`py-4 font-semibold border-b-2 transition ${selectedTab === 'active'
+                  ? 'border-primary text-primary'
+                  : 'border-transparent text-muted-foreground'
+                }`}
+            >
+              Active Orders ({activeOrders.length})
+            </motion.button>
+            <motion.button
+              whileHover={{ color: '#D97706' }}
+              onClick={() => setSelectedTab('past')}
+              className={`py-4 font-semibold border-b-2 transition ${selectedTab === 'past'
+                  ? 'border-primary text-primary'
+                  : 'border-transparent text-muted-foreground'
+                }`}
+            >
+              Past Orders ({pastOrders.length})
+            </motion.button>
+          </div>
+        </div>
+      </section>
 
-                <div className="space-y-8">
-                    {orders.length > 0 ? (
-                        orders.map((order, orderIdx) => {
-                            const statusInfo = STATUS_CONFIG[order.status as keyof typeof STATUS_CONFIG] || STATUS_CONFIG.pending;
-                            const StatusIcon = statusInfo.icon;
-                            const currentStep = statusInfo.step;
-
-                            return (
-                                <motion.div
-                                    key={order.id}
-                                    initial={{ opacity: 0, y: 30 }}
-                                    animate={{ opacity: 1, y: 0 }}
-                                    transition={{ delay: orderIdx * 0.1 }}
-                                    className="bg-white rounded-[40px] shadow-2xl shadow-gray-200/50 overflow-hidden border border-white group"
-                                >
-                                    <div className="p-8">
-                                        <div className="flex justify-between items-start mb-8">
-                                            <div>
-                                                <div className="flex items-center gap-3 mb-2">
-                                                    <span className={`px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-widest ${statusInfo.bg} ${statusInfo.color}`}>
-                                                        {statusInfo.label}
-                                                    </span>
-                                                    <span className="text-gray-300 text-[10px] font-black uppercase tracking-widest">#{order.id.slice(0, 6)}</span>
-                                                </div>
-                                                <h3 className="font-black text-2xl text-gray-900">
-                                                    {order.type === "delivery" ? "Delivery Order" : "Pickup Order"}
-                                                </h3>
-                                            </div>
-                                            <div className="text-right">
-                                                <p className="text-3xl font-black text-gray-900 tracking-tighter">${order.total.toFixed(2)}</p>
-                                                <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">Total Paid</p>
-                                            </div>
-                                        </div>
-
-                                        {/* Timeline */}
-                                        <div className="relative mb-12 px-2">
-                                            <div className="absolute top-1/2 left-0 w-full h-1.5 bg-gray-100 rounded-full -translate-y-1/2 overflow-hidden">
-                                                <motion.div
-                                                    initial={{ width: 0 }}
-                                                    animate={{ width: `${(currentStep / 5) * 100}%` }}
-                                                    transition={{ duration: 1, ease: "circOut" }}
-                                                    className={`h-full ${statusInfo.color.replace('text', 'bg')} rounded-full`}
-                                                />
-                                            </div>
-                                            <div className="relative flex justify-between z-10 w-full">
-                                                {Object.entries(STATUS_CONFIG).filter(([k]) => k !== 'rejected').map(([key, config], i) => {
-                                                    const isActive = currentStep >= config.step;
-                                                    const isCurrent = currentStep === config.step;
-
-                                                    return (
-                                                        <div key={key} className="flex flex-col items-center gap-3 group/step">
-                                                            <motion.div
-                                                                animate={{ scale: isCurrent ? 1.2 : 1 }}
-                                                                className={`w-8 h-8 rounded-full border-4 flex items-center justify-center transition-all duration-500 bg-white ${isActive ? `border-${config.color.split('-')[1]}-500 shadow-lg` : 'border-gray-100'}`}
-                                                            >
-                                                                {isActive && <div className={`w-2 h-2 rounded-full ${config.color.replace('text', 'bg')}`} />}
-                                                            </motion.div>
-                                                            <span className={`absolute -bottom-8 text-[9px] font-black uppercase tracking-widest whitespace-nowrap transition-colors ${isCurrent ? "text-gray-900" : "text-gray-300 opacity-0 group-hover/step:opacity-100"}`}>
-                                                                {config.label}
-                                                            </span>
-                                                        </div>
-                                                    )
-                                                })}
-                                            </div>
-                                        </div>
-
-                                        <div className="bg-gray-50 rounded-[32px] p-6 flex flex-col gap-4">
-                                            {order.items.map((item: any, idx: number) => (
-                                                <div key={idx} className="flex justify-between items-center text-sm">
-                                                    <div className="flex items-center gap-3">
-                                                        <span className="font-black text-gray-400">{item.quantity}x</span>
-                                                        <span className="font-bold text-gray-700">{item.name}</span>
-                                                    </div>
-                                                    <span className="font-black text-gray-900">${(item.price * item.quantity).toFixed(2)}</span>
-                                                </div>
-                                            ))}
-                                            <div className="border-t border-gray-200/50 pt-4 mt-2 flex justify-between items-center text-xs">
-                                                <span className="font-bold text-gray-400 uppercase tracking-wider">Date</span>
-                                                <span className="font-black text-gray-900">{new Date(order.createdAt?.seconds * 1000).toLocaleDateString()}</span>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </motion.div>
-                            );
-                        })
-                    ) : (
-                        <div className="text-center py-20">
-                            <ShoppingBag className="mx-auto text-gray-200 mb-4" size={48} />
-                            <h3 className="text-xl font-black text-gray-900 mb-2">No orders yet</h3>
-                            <Link href="/menu" className="text-red-600 font-bold hover:underline">Start ordering</Link>
-                        </div>
-                    )}
-                </div>
+      {/* Orders Grid */}
+      <section className="py-12 px-4 sm:px-6 lg:px-8">
+        <div className="max-w-7xl mx-auto">
+          {loading ? (
+            <div className="flex items-center justify-center py-20">
+              <Loader2 className="w-8 h-8 animate-spin text-primary" />
             </div>
+          ) : !userId ? (
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              className="text-center py-12"
+            >
+              <CheckCircle2 className="w-12 h-12 text-muted-foreground mx-auto mb-4" />
+              <p className="text-lg text-muted-foreground mb-4">
+                Sign in to see your orders
+              </p>
+              <Link
+                href="/auth/login"
+                className="inline-block px-6 py-2 bg-primary text-primary-foreground font-medium rounded-lg hover:bg-primary/90 transition"
+              >
+                Sign In
+              </Link>
+            </motion.div>
+          ) : selectedTab === 'active' ? (
+            activeOrders.length === 0 ? (
+              <motion.div
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                className="text-center py-12"
+              >
+                <Truck className="w-12 h-12 text-muted-foreground mx-auto mb-4" />
+                <p className="text-lg text-muted-foreground">No active orders</p>
+                <Link
+                  href="/menu"
+                  className="inline-block mt-4 px-6 py-2 bg-primary text-primary-foreground font-medium rounded-lg hover:bg-primary/90 transition"
+                >
+                  Order Now
+                </Link>
+              </motion.div>
+            ) : (
+              <motion.div
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                className="grid grid-cols-1 md:grid-cols-2 gap-6"
+              >
+                {activeOrders.map(order => (
+                  <OrderCard key={order.id} order={order} />
+                ))}
+              </motion.div>
+            )
+          ) : pastOrders.length === 0 ? (
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              className="text-center py-12"
+            >
+              <CheckCircle2 className="w-12 h-12 text-muted-foreground mx-auto mb-4" />
+              <p className="text-lg text-muted-foreground">No past orders</p>
+            </motion.div>
+          ) : (
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              className="grid grid-cols-1 md:grid-cols-2 gap-6"
+            >
+              {pastOrders.map(order => (
+                <OrderCard key={order.id} order={order} />
+              ))}
+            </motion.div>
+          )}
         </div>
-    );
+      </section>
+    </div>
+  )
 }

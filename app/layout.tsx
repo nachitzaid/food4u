@@ -1,40 +1,51 @@
-import type { Metadata } from "next";
-import { Inter } from "next/font/google";
-import "./globals.css";
-import { AuthProvider } from "@/hooks/useAuth";
-import { CartProvider } from "@/hooks/useCart";
-import Header from "@/components/Header";
-import Footer from "@/components/Footer";
-import { Toaster } from "react-hot-toast";
-import Cursor from "@/components/Cursor";
+import type { Metadata, Viewport } from 'next'
+import { Geist, Geist_Mono } from 'next/font/google'
+import { Analytics } from '@vercel/analytics/next'
+import '@/styles/globals.css'
 
-const inter = Inter({ subsets: ["latin"] });
+const geist = Geist({
+  variable: '--font-geist-sans',
+  subsets: ["latin"]
+});
+const geistMono = Geist_Mono({
+  variable: '--font-geist-mono',
+  subsets: ["latin"]
+});
+
+export const viewport: Viewport = {
+  width: 'device-width',
+  initialScale: 1,
+  maximumScale: 5,
+  userScalable: true,
+  themeColor: '#5C3D2E',
+};
 
 export const metadata: Metadata = {
-  title: "Food4U - Professional Restaurant Ordering",
-  description: "Get your favorite meals delivered fast and fresh.",
-};
+  title: 'Food4U - Premium Restaurant Ordering',
+  description: 'Professional restaurant ordering system for modern dining experiences',
+  keywords: 'restaurant, ordering, food delivery, online ordering',
+  openGraph: {
+    title: 'Food4U - Premium Restaurant Ordering',
+    description: 'Professional restaurant ordering system for modern dining',
+    type: 'website',
+  },
+}
+
+import { AuthProvider } from '@/context/auth-context'
 
 export default function RootLayout({
   children,
 }: Readonly<{
-  children: React.ReactNode;
+  children: React.ReactNode
 }>) {
   return (
-    <html lang="en">
-      <body className={inter.className}>
+    <html lang="en" suppressHydrationWarning>
+      <body className={`${geist.variable} ${geistMono.variable} font-sans antialiased`}>
         <AuthProvider>
-          <CartProvider>
-            <Cursor />
-            <Header />
-            <main className="min-h-screen pt-20">
-              {children}
-            </main>
-            <Footer />
-            <Toaster position="bottom-right" />
-          </CartProvider>
+          {children}
+          <Analytics />
         </AuthProvider>
       </body>
     </html>
-  );
+  )
 }
