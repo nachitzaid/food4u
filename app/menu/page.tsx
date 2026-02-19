@@ -5,92 +5,161 @@ import { useState, useMemo } from 'react'
 import { CartProvider } from '@/context/cart-context'
 import { CartSidebar } from '@/components/menu/cart-sidebar'
 import { MenuItemCard } from '@/components/menu/menu-item-card'
+import { MenuItemModal } from '@/components/menu/menu-item-modal'
 import { Header } from '@/components/header'
-import { ChefHat, Search, Clock } from 'lucide-react'
+import { Search } from 'lucide-react'
 import Link from 'next/link'
 
-// Mock menu data
+// Mock menu data with detailed information
 const MENU_ITEMS = [
   {
     id: '1',
     name: 'Grilled Salmon Fillet',
-    description: 'Fresh Atlantic salmon with lemon butter sauce',
+    description: 'Fresh Atlantic salmon with lemon butter sauce, served with garlic mashed potatoes and seasonal vegetables',
     price: 24.99,
     category: 'Mains',
-    image: '/placeholder.svg?height=200&width=300',
+    image: '/placeholder.svg?height=400&width=400',
     isAvailable: true,
+    rating: 4.8,
+    reviews: 142,
+    deliveryTime: '25-30 min',
+    distance: '2.3 km',
+    tags: ['Fresh Fish', 'Healthy', 'High Protein'],
+    ingredients: ['Atlantic Salmon', 'Lemon', 'Butter', 'Garlic', 'Potatoes', 'Seasonal Vegetables', 'Olive Oil', 'Sea Salt'],
+    nutritionalInfo: { calories: 385, protein: 42, fat: 18, carbs: 24 },
+    sizes: [
+      { size: 'S', label: '250g' },
+      { size: 'M', label: '350g' },
+      { size: 'L', label: '450g' }
+    ],
+    restaurant: { name: 'Seaside Grill', distance: '2.3 km' }
   },
   {
     id: '2',
     name: 'Ribeye Steak',
-    description: 'Premium cut aged 28 days, served with seasonal vegetables',
+    description: 'Premium cut aged 28 days, served with seasonal vegetables and truffle jus',
     price: 32.99,
     category: 'Mains',
-    image: '/placeholder.svg?height=200&width=300',
+    image: '/placeholder.svg?height=400&width=400',
     isAvailable: true,
+    rating: 4.9,
+    reviews: 287,
+    deliveryTime: '30-35 min',
+    distance: '3.1 km',
+    tags: ['Premium', 'Aged Beef', 'Special'],
+    ingredients: ['Ribeye Steak', 'Herbs', 'Garlic', 'Seasonal Vegetables', 'Truffle Oil', 'Butter'],
+    nutritionalInfo: { calories: 520, protein: 48, fat: 32, carbs: 8 },
+    sizes: [
+      { size: 'S', label: '250g' },
+      { size: 'M', label: '350g' },
+      { size: 'L', label: '450g' }
+    ],
   },
   {
     id: '3',
     name: 'Truffle Risotto',
-    description: 'Creamy risotto with black truffle and parmesan',
+    description: 'Creamy risotto with black truffle, parmesan, and wild mushrooms',
     price: 22.99,
     category: 'Mains',
-    image: '/placeholder.svg?height=200&width=300',
+    image: '/placeholder.svg?height=400&width=400',
     isAvailable: true,
+    rating: 4.7,
+    reviews: 156,
+    deliveryTime: '20-25 min',
+    distance: '2.1 km',
+    tags: ['Vegetarian', 'Creamy', 'Luxurious'],
+    ingredients: ['Arborio Rice', 'Black Truffle', 'Parmesan', 'Wild Mushrooms', 'White Wine', 'Vegetable Broth', 'Butter'],
+    nutritionalInfo: { calories: 395, protein: 18, fat: 22, carbs: 42 },
+    sizes: [
+      { size: 'S', label: '250g' },
+      { size: 'M', label: '350g' },
+      { size: 'L', label: '450g' }
+    ],
   },
   {
     id: '4',
     name: 'Caesar Salad',
-    description: 'Crisp romaine, parmesan, and homemade croutons',
+    description: 'Crisp romaine lettuce, house-made parmesan crisps, and homemade croutons',
     price: 12.99,
     category: 'Starters',
-    image: '/placeholder.svg?height=200&width=300',
+    image: '/placeholder.svg?height=400&width=400',
     isAvailable: true,
+    rating: 4.6,
+    reviews: 89,
+    deliveryTime: '15-20 min',
+    distance: '1.8 km',
+    tags: ['Fresh', 'Light', 'Vegetarian'],
+    ingredients: ['Romaine Lettuce', 'Parmesan Cheese', 'Croutons', 'Caesar Dressing', 'Black Pepper'],
+    nutritionalInfo: { calories: 280, protein: 12, fat: 16, carbs: 18 },
   },
   {
     id: '5',
     name: 'Foie Gras Terrine',
-    description: 'Smooth foie gras with brioche and fig jam',
+    description: 'Smooth foie gras with brioche toast points and fig jam',
     price: 18.99,
     category: 'Starters',
-    image: '/placeholder.svg?height=200&width=300',
+    image: '/placeholder.svg?height=400&width=400',
     isAvailable: true,
+    rating: 4.9,
+    reviews: 64,
+    deliveryTime: '18-23 min',
+    distance: '2.5 km',
+    tags: ['Luxury', 'French', 'Rich'],
+    ingredients: ['Foie Gras', 'Brioche', 'Fig Jam', 'Truffle Oil', 'Sea Salt', 'Black Pepper'],
+    nutritionalInfo: { calories: 425, protein: 8, fat: 38, carbs: 22 },
   },
   {
     id: '6',
-    name: 'Escargot Bourguignonne',
-    description: 'Snails in garlic and parsley butter',
-    price: 14.99,
-    category: 'Starters',
-    image: '/placeholder.svg?height=200&width=300',
-    isAvailable: false,
+    name: 'Chicken and Vegetable Bowls',
+    description: 'Perfectly balanced bowl with stewed chicken, fresh vegetables and white sauce with mustard',
+    price: 15.99,
+    category: 'Mains',
+    image: '/placeholder.svg?height=400&width=400',
+    isAvailable: true,
+    rating: 4.5,
+    reviews: 125,
+    deliveryTime: '15-20 min',
+    distance: '1.5 km',
+    tags: ['Healthy', 'Fresh', 'Balanced'],
+    ingredients: ['Stewed Chicken', 'White Sauce', 'Mustard', 'Carrot', 'Tomato', 'Broccoli', 'Brown Rice', 'Cucumber'],
+    nutritionalInfo: { calories: 340, protein: 32, fat: 12, carbs: 28 },
+    sizes: [
+      { size: 'S', label: '250g' },
+      { size: 'M', label: '350g' },
+      { size: 'L', label: '450g' }
+    ],
   },
   {
     id: '7',
     name: 'Chocolate Lava Cake',
-    description: 'Warm chocolate cake with molten center',
+    description: 'Warm chocolate cake with molten center, served with vanilla ice cream',
     price: 9.99,
     category: 'Desserts',
-    image: '/placeholder.svg?height=200&width=300',
+    image: '/placeholder.svg?height=400&width=400',
     isAvailable: true,
+    rating: 4.8,
+    reviews: 234,
+    deliveryTime: '10-15 min',
+    distance: '1.9 km',
+    tags: ['Chocolate', 'Warm', 'Indulgent'],
+    ingredients: ['Chocolate', 'Butter', 'Eggs', 'Sugar', 'Flour', 'Vanilla Ice Cream'],
+    nutritionalInfo: { calories: 385, protein: 6, fat: 22, carbs: 48 },
   },
   {
     id: '8',
     name: 'Vanilla Panna Cotta',
-    description: 'Silky panna cotta with berry compote',
+    description: 'Silky panna cotta with berry compote and fresh mint',
     price: 8.99,
     category: 'Desserts',
-    image: '/placeholder.svg?height=200&width=300',
+    image: '/placeholder.svg?height=400&width=400',
     isAvailable: true,
-  },
-  {
-    id: '9',
-    name: 'Espresso Martini',
-    description: 'Vodka, coffee liqueur, fresh espresso',
-    price: 11.99,
-    category: 'Beverages',
-    image: '/placeholder.svg?height=200&width=300',
-    isAvailable: true,
+    rating: 4.7,
+    reviews: 156,
+    deliveryTime: '10-15 min',
+    distance: '2.0 km',
+    tags: ['Creamy', 'Light', 'Elegant'],
+    ingredients: ['Heavy Cream', 'Vanilla', 'Gelatin', 'Sugar', 'Fresh Berries', 'Mint'],
+    nutritionalInfo: { calories: 245, protein: 4, fat: 16, carbs: 24 },
   },
 ]
 
@@ -99,6 +168,8 @@ const CATEGORIES = ['All', ...new Set(MENU_ITEMS.map(item => item.category))]
 function MenuContent() {
   const [selectedCategory, setSelectedCategory] = useState('All')
   const [searchTerm, setSearchTerm] = useState('')
+  const [selectedItem, setSelectedItem] = useState(null)
+  const [isModalOpen, setIsModalOpen] = useState(false)
 
   const filteredItems = useMemo(() => {
     return MENU_ITEMS.filter(item => {
@@ -109,6 +180,16 @@ function MenuContent() {
       return matchesCategory && matchesSearch
     })
   }, [selectedCategory, searchTerm])
+
+  const handleItemClick = (item) => {
+    setSelectedItem(item)
+    setIsModalOpen(true)
+  }
+
+  const handleCloseModal = () => {
+    setIsModalOpen(false)
+    setSelectedItem(null)
+  }
 
   return (
     <div className="min-h-screen bg-background">
@@ -189,10 +270,15 @@ function MenuContent() {
               className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"
             >
               {filteredItems.map(item => (
-                <MenuItemCard
+                <motion.div
                   key={item.id}
-                  {...item}
-                />
+                  onClick={() => handleItemClick(item)}
+                  className="cursor-pointer"
+                  whileHover={{ scale: 1.02 }}
+                  transition={{ type: 'spring', stiffness: 300, damping: 20 }}
+                >
+                  <MenuItemCard {...item} />
+                </motion.div>
               ))}
             </motion.div>
           )}
@@ -200,6 +286,13 @@ function MenuContent() {
       </section>
 
       <CartSidebar />
+
+      {/* Menu Item Detail Modal */}
+      <MenuItemModal
+        item={selectedItem}
+        isOpen={isModalOpen}
+        onClose={handleCloseModal}
+      />
     </div>
   )
 }
