@@ -20,6 +20,7 @@ import {
 } from 'firebase/firestore'
 
 const googleProvider = new GoogleAuthProvider()
+const adminEmail = (process.env.NEXT_PUBLIC_ADMIN_EMAIL ?? '').toLowerCase()
 
 // ─── Google Login & Sign Up ───────────────────────────────────────────────────
 // Note: signInWithPopup automatically creates a new account if one doesn't exist
@@ -28,7 +29,7 @@ export const loginWithGoogle = async () => {
     const user = result.user
     const userRef = doc(db, 'users', user.uid)
     const snap = await getDoc(userRef)
-    const isAdmin = user.email === 'admin@gmail.com'
+    const isAdmin = !!adminEmail && user.email?.toLowerCase() === adminEmail
     if (!snap.exists()) {
         await setDoc(userRef, {
             uid: user.uid,
@@ -53,7 +54,7 @@ export const signUpWithEmail = async (name: string, email: string, password: str
     const result = await createUserWithEmailAndPassword(auth, email, password)
     const user = result.user
     await updateProfile(user, { displayName: name })
-    const isAdmin = email === 'admin@gmail.com'
+    const isAdmin = !!adminEmail && email.toLowerCase() === adminEmail
     await setDoc(doc(db, 'users', user.uid), {
         uid: user.uid,
         name,

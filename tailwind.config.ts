@@ -35,9 +35,9 @@ const config = {
         sm: "calc(var(--radius) - 4px)",
       },
       fontFamily: {
-        sans: ["var(--font-geist-sans)"],
-        mono: ["var(--font-geist-mono)"],
-        serif: ["var(--font-playfair)"],
+        sans: ["var(--font-sans)"],
+        mono: ["var(--font-mono)"],
+        serif: ["var(--font-serif)"],
       },
       animation: {
         "fade-in": "fadeIn 0.5s ease-in-out",

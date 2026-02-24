@@ -1,54 +1,54 @@
-@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Space+Grotesk:wght@300;400;500;600;700&display=swap');
 @import 'tailwindcss';
 
 :root {
   --background: hsl(0 0% 98%);
-  --foreground: hsl(20 14% 8%);
+  --foreground: hsl(0 0% 8%);
   --card: hsl(0 0% 100%);
-  --card-foreground: hsl(20 14% 8%);
+  --card-foreground: hsl(0 0% 8%);
   --popover: hsl(0 0% 100%);
-  --popover-foreground: hsl(20 14% 8%);
-  --primary: hsl(30 45% 35%);
-  --primary-foreground: hsl(0 0% 98%);
-  --secondary: hsl(20 10% 20%);
+  --popover-foreground: hsl(0 0% 8%);
+  --primary: hsl(6 82% 54%);
+  --primary-foreground: hsl(0 0% 100%);
+  --secondary: hsl(0 0% 12%);
   --secondary-foreground: hsl(0 0% 98%);
-  --muted: hsl(20 5% 85%);
-  --muted-foreground: hsl(20 5% 45%);
-  --accent: hsl(40 60% 55%);
-  --accent-foreground: hsl(0 0% 8%);
+  --muted: hsl(0 0% 92%);
+  --muted-foreground: hsl(0 0% 40%);
+  --accent: hsl(45 96% 54%);
+  --accent-foreground: hsl(0 0% 10%);
   --destructive: hsl(0 84.2% 60.2%);
   --destructive-foreground: hsl(0 0% 98%);
-  --border: hsl(20 5% 90%);
+  --border: hsl(0 0% 90%);
   --input: hsl(0 0% 96%);
-  --ring: hsl(30 45% 35%);
-  --radius: 0.5rem;
+  --ring: hsl(6 82% 54%);
+  --radius: 1rem;
 }
 
 .dark {
-  --background: hsl(20 14% 8%);
+  --background: hsl(0 0% 8%);
   --foreground: hsl(0 0% 98%);
-  --card: hsl(20 10% 15%);
+  --card: hsl(0 0% 12%);
   --card-foreground: hsl(0 0% 98%);
-  --popover: hsl(20 10% 15%);
+  --popover: hsl(0 0% 12%);
   --popover-foreground: hsl(0 0% 98%);
-  --primary: hsl(40 60% 55%);
-  --primary-foreground: hsl(20 14% 8%);
-  --secondary: hsl(20 5% 35%);
+  --primary: hsl(6 82% 54%);
+  --primary-foreground: hsl(0 0% 100%);
+  --secondary: hsl(0 0% 20%);
   --secondary-foreground: hsl(0 0% 98%);
-  --muted: hsl(20 5% 30%);
-  --muted-foreground: hsl(20 5% 60%);
-  --accent: hsl(30 45% 50%);
-  --accent-foreground: hsl(0 0% 98%);
+  --muted: hsl(0 0% 22%);
+  --muted-foreground: hsl(0 0% 60%);
+  --accent: hsl(45 96% 54%);
+  --accent-foreground: hsl(0 0% 10%);
   --destructive: hsl(0 84.2% 60.2%);
-  --destructive-foreground: hsl(20 14% 8%);
-  --border: hsl(20 10% 20%);
-  --input: hsl(20 10% 18%);
-  --ring: hsl(40 60% 55%);
+  --destructive-foreground: hsl(0 0% 100%);
+  --border: hsl(0 0% 18%);
+  --input: hsl(0 0% 16%);
+  --ring: hsl(6 82% 54%);
 }
 
 @theme inline {
-  --font-sans: 'Geist', 'Geist Fallback';
-  --font-serif: 'Playfair Display', serif;
+  --font-sans: 'Space Grotesk', sans-serif;
+  --font-serif: 'Bebas Neue', sans-serif;
   --font-mono: 'Geist Mono', 'Geist Mono Fallback';
   --color-background: var(--background);
   --color-foreground: var(--foreground);

@@ -4,7 +4,7 @@ import { motion } from 'framer-motion'
 import { Header } from '@/components/header'
 import {
   BarChart3, ShoppingCart, TrendingUp, Clock, CheckCircle2,
-  AlertCircle, ChefHat, Loader2, Users, Mail, Phone, Calendar
+  AlertCircle, ChefHat, Loader2, Users, Mail, Phone, Calendar, Tag
 } from 'lucide-react'
 import { useState, useEffect } from 'react'
 import Link from 'next/link'
@@ -124,30 +124,28 @@ export default function AdminDashboard() {
   ]
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-[radial-gradient(circle_at_top,_rgba(255,255,255,0.7),_rgba(240,242,245,0.9)_45%,_rgba(230,233,236,1)_100%)]">
       <Header />
 
-      {/* Status Banner */}
-      <motion.div
-        initial={{ opacity: 0, y: -20 }}
-        animate={{ opacity: 1, y: 0 }}
-        className={`${isOpen
-          ? 'bg-emerald-500/10 border-emerald-500/20 text-emerald-500'
-          : 'bg-destructive/10 border-destructive/20 text-destructive'
-          } border-b px-4 sm:px-6 lg:px-8 py-3 flex items-center justify-between`}
-      >
-        <span className="font-semibold">Restaurant is {isOpen ? 'OPEN' : 'CLOSED'}</span>
-        <button
-          onClick={() => setIsOpen(v => !v)}
-          className="text-sm underline opacity-70 hover:opacity-100 transition"
-        >
-          Toggle
-        </button>
-      </motion.div>
+      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 lg:py-14">
+        <div className="rounded-[2.5rem] bg-card/90 border border-border/60 shadow-[0_24px_80px_-40px_rgba(0,0,0,0.4)] p-6 lg:p-10 space-y-10">
+          <motion.div
+            initial={{ opacity: 0, y: -10 }}
+            animate={{ opacity: 1, y: 0 }}
+            className={`rounded-2xl border px-4 py-3 flex items-center justify-between ${isOpen
+              ? 'bg-emerald-500/10 border-emerald-500/20 text-emerald-600'
+              : 'bg-destructive/10 border-destructive/20 text-destructive'
+              }`}
+          >
+            <span className="font-semibold">Restaurant is {isOpen ? 'OPEN' : 'CLOSED'}</span>
+            <button
+              onClick={() => setIsOpen(v => !v)}
+              className="text-sm underline opacity-70 hover:opacity-100 transition"
+            >
+              Toggle
+            </button>
+          </motion.div>
 
-      {/* Stats Grid */}
-      <section className="py-8 px-4 sm:px-6 lg:px-8 border-b border-border">
-        <div className="max-w-7xl mx-auto">
           <div className="grid grid-cols-2 lg:grid-cols-5 gap-4">
             {stats.map((stat, i) => {
               const Icon = stat.icon
@@ -157,7 +155,7 @@ export default function AdminDashboard() {
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: i * 0.1 }}
-                  className="bg-card border border-border rounded-xl p-4"
+                  className="bg-background border border-border rounded-2xl p-4"
                 >
                   <div className="flex items-center justify-between mb-2">
                     <p className="text-xs md:text-sm text-muted-foreground font-medium">
@@ -175,7 +173,7 @@ export default function AdminDashboard() {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.4 }}
-              className="bg-card border border-border rounded-xl p-4"
+              className="bg-background border border-border rounded-2xl p-4"
             >
               <div className="flex items-center justify-between mb-2">
                 <p className="text-xs md:text-sm text-muted-foreground font-medium">
@@ -188,12 +186,7 @@ export default function AdminDashboard() {
               </p>
             </motion.div>
           </div>
-        </div>
-      </section>
 
-      {/* Main Content */}
-      <section className="py-12 px-4 sm:px-6 lg:px-8">
-        <div className="max-w-7xl mx-auto">
           <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 mb-8">
             <div className="flex items-center gap-1 bg-muted p-1 rounded-xl w-fit">
               <button
@@ -223,6 +216,13 @@ export default function AdminDashboard() {
               >
                 <ChefHat className="w-4 h-4" />
                 Manage Menu
+              </Link>
+              <Link
+                href="/admin/deals"
+                className="px-4 py-2 bg-card border border-border text-foreground font-medium rounded-lg hover:border-primary/50 transition flex items-center gap-2"
+              >
+                <Tag className="w-4 h-4" />
+                Manage Deals
               </Link>
               <Link
                 href="/admin/analytics"
@@ -381,7 +381,7 @@ export default function AdminDashboard() {
             )
           ) : (
             /* Users Table */
-            <div className="bg-card border border-border rounded-2xl overflow-hidden">
+            <div className="bg-background border border-border rounded-2xl overflow-hidden">
               <div className="overflow-x-auto">
                 <table className="w-full text-left">
                   <thead className="bg-muted/50 border-b border-border">
@@ -437,7 +437,7 @@ export default function AdminDashboard() {
             </div>
           )}
         </div>
-      </section>
+      </main>
     </div>
   )
 }

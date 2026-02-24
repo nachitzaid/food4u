@@ -189,52 +189,41 @@ export default function OrdersPage() {
   const pastOrders = orders.filter(o => o.status === 'delivered')
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-[radial-gradient(circle_at_top,_rgba(255,255,255,0.7),_rgba(240,242,245,0.9)_45%,_rgba(230,233,236,1)_100%)]">
       <Header />
 
-      {/* Header */}
-      <section className="py-12 px-4 sm:px-6 lg:px-8 border-b border-border">
-        <div className="max-w-7xl mx-auto">
-          <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}>
-            <h1 className="font-serif text-4xl md:text-5xl font-bold text-foreground mb-2">
-              Your Orders
-            </h1>
-            <p className="text-muted-foreground">Track your current and past orders</p>
-          </motion.div>
-        </div>
-      </section>
+      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 lg:py-14">
+        <div className="rounded-[2.5rem] bg-card/90 border border-border/60 shadow-[0_24px_80px_-40px_rgba(0,0,0,0.4)] p-6 lg:p-10">
+          <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-6 mb-8">
+            <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}>
+              <h1 className="font-serif text-4xl md:text-5xl font-bold text-foreground mb-2">
+                Your Orders
+              </h1>
+              <p className="text-muted-foreground">Track your current and past orders</p>
+            </motion.div>
 
-      {/* Tabs */}
-      <section className="sticky top-16 z-30 bg-background border-b border-border">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex gap-8">
-            <motion.button
-              whileHover={{ color: '#D97706' }}
-              onClick={() => setSelectedTab('active')}
-              className={`py-4 font-semibold border-b-2 transition ${selectedTab === 'active'
-                  ? 'border-primary text-primary'
-                  : 'border-transparent text-muted-foreground'
-                }`}
-            >
-              Active Orders ({activeOrders.length})
-            </motion.button>
-            <motion.button
-              whileHover={{ color: '#D97706' }}
-              onClick={() => setSelectedTab('past')}
-              className={`py-4 font-semibold border-b-2 transition ${selectedTab === 'past'
-                  ? 'border-primary text-primary'
-                  : 'border-transparent text-muted-foreground'
-                }`}
-            >
-              Past Orders ({pastOrders.length})
-            </motion.button>
+            <div className="flex items-center gap-2 rounded-full bg-muted/40 p-1">
+              <button
+                onClick={() => setSelectedTab('active')}
+                className={`px-5 py-2 rounded-full text-sm font-semibold transition ${selectedTab === 'active'
+                    ? 'bg-foreground text-background shadow'
+                    : 'text-muted-foreground hover:text-foreground'
+                  }`}
+              >
+                Active ({activeOrders.length})
+              </button>
+              <button
+                onClick={() => setSelectedTab('past')}
+                className={`px-5 py-2 rounded-full text-sm font-semibold transition ${selectedTab === 'past'
+                    ? 'bg-foreground text-background shadow'
+                    : 'text-muted-foreground hover:text-foreground'
+                  }`}
+              >
+                Past ({pastOrders.length})
+              </button>
+            </div>
           </div>
-        </div>
-      </section>
 
-      {/* Orders Grid */}
-      <section className="py-12 px-4 sm:px-6 lg:px-8">
-        <div className="max-w-7xl mx-auto">
           {loading ? (
             <div className="flex items-center justify-center py-20">
               <Loader2 className="w-8 h-8 animate-spin text-primary" />
@@ -251,7 +240,7 @@ export default function OrdersPage() {
               </p>
               <Link
                 href="/auth/login"
-                className="inline-block px-6 py-2 bg-primary text-primary-foreground font-medium rounded-lg hover:bg-primary/90 transition"
+                className="inline-block px-6 py-2 bg-primary text-primary-foreground font-medium rounded-full hover:bg-primary/90 transition"
               >
                 Sign In
               </Link>
@@ -267,7 +256,7 @@ export default function OrdersPage() {
                 <p className="text-lg text-muted-foreground">No active orders</p>
                 <Link
                   href="/menu"
-                  className="inline-block mt-4 px-6 py-2 bg-primary text-primary-foreground font-medium rounded-lg hover:bg-primary/90 transition"
+                  className="inline-block mt-4 px-6 py-2 bg-primary text-primary-foreground font-medium rounded-full hover:bg-primary/90 transition"
                 >
                   Order Now
                 </Link>
@@ -304,7 +293,7 @@ export default function OrdersPage() {
             </motion.div>
           )}
         </div>
-      </section>
+      </main>
     </div>
   )
 }

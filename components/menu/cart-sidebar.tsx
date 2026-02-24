@@ -2,14 +2,16 @@
 
 import { motion, AnimatePresence } from 'framer-motion'
 import { ShoppingCart, X, Plus, Minus } from 'lucide-react'
-import { useCart } from '@/context/cart-context'
+import { getCartItemKey, useCart } from '@/context/cart-context'
 import { useState } from 'react'
 import Image from 'next/image'
 import Link from 'next/link'
 
 export function CartSidebar() {
   const [isOpen, setIsOpen] = useState(false)
-  const { items, subtotal, itemCount, removeItem, updateQuantity } = useCart()
+  const { items, subtotal, itemCount, removeItem, updateQuantity, remainingMs } = useCart()
+  const minutes = Math.floor(remainingMs / 60000)
+  const seconds = Math.floor((remainingMs % 60000) / 1000)
 
   return (
     <>
@@ -59,7 +61,14 @@ export function CartSidebar() {
           >
             {/* Header */}
             <div className="flex items-center justify-between p-6 border-b border-border">
-              <h2 className="font-serif text-2xl font-bold text-foreground">Your Cart</h2>
+              <div>
+                <h2 className="font-serif text-2xl font-bold text-foreground">Your Cart</h2>
+                {remainingMs > 0 && (
+                  <p className="text-xs text-muted-foreground">
+                    Expires in {String(minutes).padStart(2, '0')}:{String(seconds).padStart(2, '0')}
+                  </p>
+                )}
+              </div>
               <button
                 onClick={() => setIsOpen(false)}
                 className="p-2 hover:bg-muted rounded-lg transition"
@@ -77,9 +86,11 @@ export function CartSidebar() {
                 </div>
               ) : (
                 <div className="space-y-4">
-                  {items.map(item => (
+                  {items.map(item => {
+                    const itemKey = getCartItemKey(item)
+                    return (
                     <motion.div
-                      key={item.id}
+                      key={itemKey}
                       initial={{ opacity: 0, y: 10 }}
                       animate={{ opacity: 1, y: 0 }}
                       exit={{ opacity: 0, y: -10 }}
@@ -98,6 +109,9 @@ export function CartSidebar() {
                         <h4 className="font-semibold text-foreground text-sm mb-1 leading-tight">
                           {item.name}
                         </h4>
+                        {item.size && (
+                          <div className="text-[10px] text-muted-foreground mb-1">Size: {item.size}</div>
+                        )}
 
                         {/* Customizations */}
                         {(item.removedIngredients?.length || item.extras?.length) ? (
@@ -121,7 +135,7 @@ export function CartSidebar() {
 
                         <div className="flex items-center gap-1 bg-primary/10 rounded-lg w-fit">
                           <button
-                            onClick={() => updateQuantity(item.id, item.quantity - 1)}
+                            onClick={() => updateQuantity(itemKey, item.quantity - 1)}
                             className="p-1 hover:bg-primary/20 rounded transition"
                           >
                             <Minus className="w-3 h-3 text-primary" />
@@ -130,7 +144,7 @@ export function CartSidebar() {
                             {item.quantity}
                           </span>
                           <button
-                            onClick={() => updateQuantity(item.id, item.quantity + 1)}
+                            onClick={() => updateQuantity(itemKey, item.quantity + 1)}
                             className="p-1 hover:bg-primary/20 rounded transition"
                           >
                             <Plus className="w-3 h-3 text-primary" />
@@ -139,13 +153,13 @@ export function CartSidebar() {
                       </div>
 
                       <button
-                        onClick={() => removeItem(item.id)}
+                        onClick={() => removeItem(itemKey)}
                         className="p-1 text-destructive hover:bg-destructive/10 rounded transition"
                       >
                         <X className="w-4 h-4" />
                       </button>
                     </motion.div>
-                  ))}
+                  )})}
                 </div>
               )}
             </div>

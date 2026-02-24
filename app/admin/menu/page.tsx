@@ -21,6 +21,11 @@ interface Extra {
   price: number
 }
 
+interface SizeOption {
+  label: string
+  priceDelta: number
+}
+
 interface MenuItem {
   id: string
   name: string
@@ -30,6 +35,7 @@ interface MenuItem {
   image: string
   calories?: number
   protein?: number
+  sizes: SizeOption[]
   ingredients: Ingredient[]
   extras: Extra[]
   isAvailable: boolean
@@ -43,8 +49,15 @@ export default function AdminMenuPage() {
   const [editingItem, setEditingItem] = useState<MenuItem | null>(null)
   const [isSaving, setIsSaving] = useState(false)
   const [isUploading, setIsUploading] = useState(false)
+  const [isReseeding, setIsReseeding] = useState(false)
 
   const restaurantId = process.env.NEXT_PUBLIC_RESTAURANT_ID ?? 'demo-restaurant'
+  const targetCount = 100
+  const defaultSizes: SizeOption[] = [
+    { label: '380g', priceDelta: 0 },
+    { label: '480g', priceDelta: 2 },
+    { label: '560g', priceDelta: 4 },
+  ]
 
   useEffect(() => {
     if (!authLoading && profile?.role !== 'admin') {
@@ -56,7 +69,14 @@ export default function AdminMenuPage() {
     const fetchMenu = async () => {
       try {
         const data = await getMenuItems(restaurantId)
-        setItems(data as MenuItem[])
+        if (data.length < targetCount && profile?.role === 'admin') {
+          const { seedMenu } = await import('@/services/seed')
+          await seedMenu(restaurantId)
+          const refreshed = await getMenuItems(restaurantId)
+          setItems(refreshed as MenuItem[])
+        } else {
+          setItems(data as MenuItem[])
+        }
       } catch (error) {
         console.error('Failed to fetch menu:', error)
       } finally {
@@ -64,7 +84,7 @@ export default function AdminMenuPage() {
       }
     }
     fetchMenu()
-  }, [restaurantId])
+  }, [restaurantId, profile])
 
   const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0]
@@ -125,10 +145,11 @@ export default function AdminMenuPage() {
       name: '',
       description: '',
       price: 0,
-      category: 'Pizza',
+      category: 'Pasta',
       image: '',
       calories: 0,
       protein: 0,
+      sizes: defaultSizes,
       ingredients: [],
       extras: [],
       isAvailable: true
@@ -144,68 +165,93 @@ export default function AdminMenuPage() {
   }
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-[radial-gradient(circle_at_top,_rgba(255,255,255,0.7),_rgba(240,242,245,0.9)_45%,_rgba(230,233,236,1)_100%)]">
       <Header />
 
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-        <div className="flex justify-between items-center mb-12">
-          <div>
-            <h1 className="font-serif text-4xl font-bold text-foreground">Menu Management</h1>
-            <p className="text-muted-foreground mt-1 text-lg">Add, edit, or customize your dishes</p>
+        <div className="rounded-[2.5rem] bg-card/90 border border-border/60 shadow-[0_24px_80px_-40px_rgba(0,0,0,0.4)] p-6 lg:p-10">
+          <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 mb-12">
+            <div>
+              <h1 className="font-serif text-4xl font-bold text-foreground">Menu Management</h1>
+              <p className="text-muted-foreground mt-1 text-lg">Add, edit, or customize your dishes</p>
+            </div>
+            <div className="flex flex-wrap items-center gap-3">
+              <button
+                onClick={async () => {
+                  setIsReseeding(true)
+                  try {
+                    const { reseedMenu } = await import('@/services/seed')
+                    await reseedMenu(restaurantId)
+                    const refreshed = await getMenuItems(restaurantId)
+                    setItems(refreshed as MenuItem[])
+                  } catch (error) {
+                    console.error('Re-seed failed:', error)
+                    alert('Failed to re-seed menu. Please check the console for details.')
+                  } finally {
+                    setIsReseeding(false)
+                  }
+                }}
+                disabled={isReseeding}
+                className="px-6 py-3 bg-foreground text-background font-bold rounded-full shadow-lg hover:bg-foreground/90 transition-all flex items-center gap-2"
+              >
+                {isReseeding ? <Loader2 className="w-5 h-5 animate-spin" /> : <Info className="w-5 h-5" />}
+                Re-seed & Overwrite
+              </button>
+              <button
+                onClick={startNewItem}
+                className="px-6 py-3 bg-primary text-primary-foreground font-bold rounded-full shadow-lg shadow-primary/20 hover:bg-primary/90 transition-all flex items-center gap-2"
+              >
+                <Plus className="w-5 h-5" />
+                Add New Item
+              </button>
+            </div>
           </div>
-          <button
-            onClick={startNewItem}
-            className="px-6 py-3 bg-primary text-primary-foreground font-bold rounded-xl shadow-lg shadow-primary/20 hover:bg-primary/90 transition-all flex items-center gap-2"
-          >
-            <Plus className="w-5 h-5" />
-            Add New Item
-          </button>
-        </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-          {items.map(item => (
-            <motion.div
-              key={item.id}
-              className="bg-card border border-border rounded-2xl overflow-hidden shadow-sm group hover:shadow-xl transition-all"
-            >
-              <div className="relative h-48">
-                <img src={item.image} alt={item.name} className="w-full h-full object-cover" />
-                <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-4">
-                  <button
-                    onClick={() => setEditingItem(item)}
-                    className="p-3 bg-white text-black rounded-full hover:scale-110 transition-transform shadow-lg"
-                  >
-                    <Edit2 className="w-5 h-5" />
-                  </button>
-                  <button
-                    onClick={() => handleDelete(item.id)}
-                    className="p-3 bg-destructive text-white rounded-full hover:scale-110 transition-transform shadow-lg"
-                  >
-                    <Trash2 className="w-5 h-5" />
-                  </button>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            {items.map(item => (
+              <motion.div
+                key={item.id}
+                className="bg-background border border-border rounded-3xl overflow-hidden shadow-sm group hover:shadow-xl transition-all"
+              >
+                <div className="relative h-48">
+                  <img src={item.image} alt={item.name} className="w-full h-full object-cover" />
+                  <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-4">
+                    <button
+                      onClick={() => setEditingItem({ ...item, sizes: item.sizes?.length ? item.sizes : defaultSizes })}
+                      className="p-3 bg-white text-black rounded-full hover:scale-110 transition-transform shadow-lg"
+                    >
+                      <Edit2 className="w-5 h-5" />
+                    </button>
+                    <button
+                      onClick={() => handleDelete(item.id)}
+                      className="p-3 bg-destructive text-white rounded-full hover:scale-110 transition-transform shadow-lg"
+                    >
+                      <Trash2 className="w-5 h-5" />
+                    </button>
+                  </div>
                 </div>
-              </div>
-              <div className="p-6">
-                <div className="flex justify-between items-start mb-2">
-                  <h3 className="font-serif text-xl font-bold text-foreground">{item.name}</h3>
-                  <span className="font-bold text-primary">${item.price.toFixed(2)}</span>
-                </div>
-                <p className="text-sm text-muted-foreground line-clamp-2 mb-4">{item.description}</p>
+                <div className="p-6">
+                  <div className="flex justify-between items-start mb-2">
+                    <h3 className="font-serif text-xl font-bold text-foreground">{item.name}</h3>
+                    <span className="font-bold text-primary">${item.price.toFixed(2)}</span>
+                  </div>
+                  <p className="text-sm text-muted-foreground line-clamp-2 mb-4">{item.description}</p>
 
-                <div className="flex items-center gap-4 text-xs font-bold text-muted-foreground border-t border-border pt-4">
-                  <span className="flex items-center gap-1">
-                    <Flame className="w-3.5 h-3.5 text-orange-500" />
-                    {item.calories} kcal
-                  </span>
-                  <span className="flex items-center gap-1">
-                    <Zap className="w-3.5 h-3.5 text-emerald-500" />
-                    {item.protein}g protein
-                  </span>
-                  <span className="ml-auto text-primary uppercase tracking-widest">{item.category}</span>
+                  <div className="flex items-center gap-4 text-xs font-bold text-muted-foreground border-t border-border pt-4">
+                    <span className="flex items-center gap-1">
+                      <Flame className="w-3.5 h-3.5 text-orange-500" />
+                      {item.calories} kcal
+                    </span>
+                    <span className="flex items-center gap-1">
+                      <Zap className="w-3.5 h-3.5 text-emerald-500" />
+                      {item.protein}g protein
+                    </span>
+                    <span className="ml-auto text-primary uppercase tracking-widest">{item.category}</span>
+                  </div>
                 </div>
-              </div>
-            </motion.div>
-          ))}
+              </motion.div>
+            ))}
+          </div>
         </div>
       </main>
 
@@ -273,12 +319,14 @@ export default function AdminMenuPage() {
                           onChange={e => setEditingItem({ ...editingItem, category: e.target.value })}
                           className="w-full bg-background border border-border p-3 rounded-xl focus:ring-2 focus:ring-primary/40 outline-none"
                         >
-                          <option>Pizza</option>
-                          <option>Burgers</option>
                           <option>Pasta</option>
-                          <option>Salads</option>
-                          <option>Desserts</option>
-                          <option>Drinks</option>
+                          <option>Salad</option>
+                          <option>Seafood</option>
+                          <option>Soups</option>
+                          <option>Roasted Meats</option>
+                          <option>Oven-Baked</option>
+                          <option>Plant-Based</option>
+                          <option>Rice</option>
                         </select>
                       </div>
                     </div>
@@ -368,6 +416,54 @@ export default function AdminMenuPage() {
                             <button
                               type="button"
                               onClick={() => setEditingItem({ ...editingItem, ingredients: editingItem.ingredients.filter((_, i) => i !== idx) })}
+                              className="p-2 text-destructive hover:bg-destructive/10 rounded-lg"
+                            >
+                              <X className="w-4 h-4" />
+                            </button>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+
+                    {/* Sizes */}
+                    <div className="space-y-3">
+                      <div className="flex justify-between items-center">
+                        <label className="text-xs font-bold uppercase tracking-widest text-muted-foreground">Size Options</label>
+                        <button
+                          type="button"
+                          onClick={() => setEditingItem({ ...editingItem, sizes: [...editingItem.sizes, { label: '', priceDelta: 0 }] })}
+                          className="text-[10px] bg-primary text-primary-foreground px-2 py-1 rounded-md font-bold uppercase tracking-tighter"
+                        >
+                          + Add Size
+                        </button>
+                      </div>
+                      <div className="space-y-2 max-h-48 overflow-y-auto">
+                        {editingItem.sizes.map((size, idx) => (
+                          <div key={idx} className="flex gap-2">
+                            <input
+                              value={size.label}
+                              onChange={e => {
+                                const newSizes = [...editingItem.sizes]
+                                newSizes[idx].label = e.target.value
+                                setEditingItem({ ...editingItem, sizes: newSizes })
+                              }}
+                              placeholder="380g"
+                              className="flex-1 bg-background border border-border px-3 py-2 rounded-lg text-sm outline-none"
+                            />
+                            <input
+                              type="number"
+                              step="0.5"
+                              value={size.priceDelta}
+                              onChange={e => {
+                                const newSizes = [...editingItem.sizes]
+                                newSizes[idx].priceDelta = parseFloat(e.target.value) || 0
+                                setEditingItem({ ...editingItem, sizes: newSizes })
+                              }}
+                              className="w-20 bg-background border border-border px-3 py-2 rounded-lg text-sm outline-none"
+                            />
+                            <button
+                              type="button"
+                              onClick={() => setEditingItem({ ...editingItem, sizes: editingItem.sizes.filter((_, i) => i !== idx) })}
                               className="p-2 text-destructive hover:bg-destructive/10 rounded-lg"
                             >
                               <X className="w-4 h-4" />

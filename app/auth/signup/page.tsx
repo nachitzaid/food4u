@@ -103,14 +103,13 @@ export default function SignupPage() {
   const passwordStrength = formData.password ? validatePassword(formData.password) ? 'strong' : 'weak' : '';
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-background to-muted flex items-center justify-center p-4">
+    <div className="min-h-screen bg-[radial-gradient(circle_at_top,_rgba(255,255,255,0.7),_rgba(240,242,245,0.9)_45%,_rgba(230,233,236,1)_100%)] flex items-center justify-center p-4">
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5 }}
         className="w-full max-w-md"
       >
-        {/* Logo/Branding */}
         <div className="text-center mb-8">
           <motion.h1
             className="text-4xl font-serif font-bold text-primary mb-2"
@@ -123,9 +122,8 @@ export default function SignupPage() {
           <p className="text-muted-foreground">Join us for premium dining experiences</p>
         </div>
 
-        {/* Signup Form */}
         <motion.div
-          className="bg-card rounded-lg shadow-lg p-8 border border-border"
+          className="bg-card/90 rounded-[2rem] shadow-[0_24px_80px_-40px_rgba(0,0,0,0.4)] p-8 border border-border/60"
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.2 }}
@@ -141,7 +139,6 @@ export default function SignupPage() {
           )}
 
           <form onSubmit={handleSubmit} className="space-y-4">
-            {/* Full Name */}
             <div>
               <label className="block text-sm font-medium text-foreground mb-2">
                 Full Name
@@ -154,12 +151,11 @@ export default function SignupPage() {
                   value={formData.name}
                   onChange={handleChange}
                   placeholder="John Doe"
-                  className="w-full pl-10 pr-4 py-2 border border-border rounded-md bg-input text-foreground placeholder-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary transition-colors"
+                  className="w-full pl-10 pr-4 py-3 border border-border rounded-full bg-background text-foreground placeholder-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary transition-colors"
                 />
               </div>
             </div>
 
-            {/* Email */}
             <div>
               <label className="block text-sm font-medium text-foreground mb-2">
                 Email Address
@@ -172,12 +168,11 @@ export default function SignupPage() {
                   value={formData.email}
                   onChange={handleChange}
                   placeholder="you@example.com"
-                  className="w-full pl-10 pr-4 py-2 border border-border rounded-md bg-input text-foreground placeholder-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary transition-colors"
+                  className="w-full pl-10 pr-4 py-3 border border-border rounded-full bg-background text-foreground placeholder-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary transition-colors"
                 />
               </div>
             </div>
 
-            {/* Password */}
             <div>
               <label className="block text-sm font-medium text-foreground mb-2">
                 Password
@@ -189,8 +184,8 @@ export default function SignupPage() {
                   name="password"
                   value={formData.password}
                   onChange={handleChange}
-                  placeholder="••••••••"
-                  className="w-full pl-10 pr-12 py-2 border border-border rounded-md bg-input text-foreground placeholder-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary transition-colors"
+                  placeholder="********"
+                  className="w-full pl-10 pr-12 py-3 border border-border rounded-full bg-background text-foreground placeholder-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary transition-colors"
                 />
                 <button
                   type="button"
@@ -216,7 +211,6 @@ export default function SignupPage() {
               )}
             </div>
 
-            {/* Confirm Password */}
             <div>
               <label className="block text-sm font-medium text-foreground mb-2">
                 Confirm Password
@@ -228,8 +222,8 @@ export default function SignupPage() {
                   name="confirmPassword"
                   value={formData.confirmPassword}
                   onChange={handleChange}
-                  placeholder="••••••••"
-                  className="w-full pl-10 pr-12 py-2 border border-border rounded-md bg-input text-foreground placeholder-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary transition-colors"
+                  placeholder="********"
+                  className="w-full pl-10 pr-12 py-3 border border-border rounded-full bg-background text-foreground placeholder-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary transition-colors"
                 />
                 <button
                   type="button"
@@ -257,7 +251,6 @@ export default function SignupPage() {
               )}
             </div>
 
-            {/* Terms */}
             <div className="flex items-center gap-2 text-sm">
               <input
                 type="checkbox"
@@ -274,11 +267,10 @@ export default function SignupPage() {
               </label>
             </div>
 
-            {/* Submit Button */}
             <motion.button
               type="submit"
               disabled={loading}
-              className="w-full bg-primary text-primary-foreground py-2 rounded-md font-medium hover:bg-primary/90 transition-colors flex items-center justify-center gap-2 disabled:opacity-50"
+              className="w-full bg-primary text-primary-foreground py-3 rounded-full font-medium hover:bg-primary/90 transition-colors flex items-center justify-center gap-2 disabled:opacity-50"
               whileHover={{ scale: 1.02 }}
               whileTap={{ scale: 0.98 }}
             >
@@ -287,18 +279,16 @@ export default function SignupPage() {
             </motion.button>
           </form>
 
-          {/* Divider */}
           <div className="my-6 flex items-center gap-4">
             <div className="flex-1 h-px bg-border" />
             <span className="text-muted-foreground text-sm">or</span>
             <div className="flex-1 h-px bg-border" />
           </div>
 
-          {/* Google Signup */}
           <motion.button
             onClick={handleGoogleLogin}
             disabled={loading}
-            className="w-full border border-border py-2 rounded-md font-medium text-foreground hover:bg-muted transition-colors flex items-center justify-center gap-2 disabled:opacity-50"
+            className="w-full border border-border py-3 rounded-full font-medium text-foreground hover:bg-muted transition-colors flex items-center justify-center gap-2 disabled:opacity-50"
             whileHover={{ scale: 1.02 }}
             whileTap={{ scale: 0.98 }}
           >
@@ -312,7 +302,6 @@ export default function SignupPage() {
           </motion.button>
         </motion.div>
 
-        {/* Login Link */}
         <div className="text-center mt-6">
           <p className="text-muted-foreground">
             Already have an account?{' '}
